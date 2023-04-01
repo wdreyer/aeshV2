@@ -15,8 +15,6 @@ import {
   import { useAuthState } from "react-firebase-hooks/auth";
   import {
     getAuth,
-    createUserWithEmailAndPassword,
-    onAuthStateChanged,
   } from "firebase/auth";
   import {
     getFirestore,

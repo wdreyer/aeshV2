@@ -5,13 +5,10 @@ import { getAuth,signInWithEmailAndPassword } from "firebase/auth";
 import app from '../firebaseConfig'
 const auth = getAuth(app)
 
-
-
 function Login () {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [connectionError,setConnectionError] = useState('');
-
 
   const handleForm = () => {
     event.preventDefault();

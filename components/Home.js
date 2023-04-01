@@ -1,19 +1,9 @@
-
-import Header from './Header';
-
-
-
-function Home () {
-
-    
-
-    return (
-        <div>
-        <Header/>
-     
-
-        </div>
-    )
+function Home() {
+  return (
+    <div >
+    Accueil
+  </div>
+  )
 }
 
-export default Home
+export default Home;

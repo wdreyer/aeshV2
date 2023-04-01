@@ -1,34 +1,27 @@
 import React, { useState } from 'react';
 import { ProgressBar, Step } from 'react-step-progress-bar';
 import 'react-step-progress-bar/styles.css';
-
-import GeneralInfo from './GeneralInfo';
+import AeshInfo from './AeshInfo';
 import ChildrenInfo from './ChildrenInfo';
-import AESHInfo from './AESHInfo';
+import GeneralInfo from './GeneralInfo';
 
 const InscriptionForm = () => {
-    const [step, setStep] = useState(2);
+    const [step, setStep] = useState(1);
     const [formData, setFormData] = useState({
       generalInfo: {},
       childrenInfo: {},
       aeshInfo: {},
     });
-  
-    // Fonction pour passer à l'étape suivante
     const nextStep = () => {
       if (step < 3) {
         setStep(step + 1);
       }
     };
-  
-    // Fonction pour revenir à l'étape précédente
     const prevStep = () => {
       if (step > 1) {
         setStep(step - 1);
       }
     };
-  
-    // Fonction pour enregistrer les données du formulaire
     const saveData = (data) => {
       setFormData({ ...formData, ...data });
     };
@@ -93,7 +86,7 @@ const InscriptionForm = () => {
           )}
           {step === 3 && (
             <>
-              <AESHInfo saveData={saveData} prevStep={prevStep} />
+              <AeshInfo saveData={saveData} prevStep={prevStep} />
             </>
           )}
         </main> 
