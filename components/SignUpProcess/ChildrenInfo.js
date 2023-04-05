@@ -90,9 +90,7 @@ const handleSubmit = async () => {
       hours: `${String(form.getFieldValue(`time${index}.startHour`)).padStart(2, "0")}:${String(form.getFieldValue(`time${index}.startMinute`)).padStart(2, "0")}`,
     };
   });
-
   try {
-
   childrenData.forEach(async (child) => {
     await addDoc(collection(db, `schools/${schoolDoc.id}/children`), child);
   });
