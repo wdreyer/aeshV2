@@ -24,13 +24,13 @@ function ChildPlanning({
   teacher,
   hours,
   hoursReels,
-  schoolID,
+  schoolId,
   childID,
-  fetchedPlanning,
-  onSave
+  planning,
+  onSave,
 }) {
   const [form] = Form.useForm();
-  const [planning, setPlanning] = useState({});
+  const [planningActual, setPlanningActual] = useState({});
   const [levelsData, setLevelsData] = useState({});
   const [aeshList, setAeshList] = useState([]);
   const [user, loading, error] = useAuthState(auth);
@@ -47,11 +47,18 @@ function ChildPlanning({
       teacher,
       hours,
       hoursReels,
+      planning,
     })
 
   useEffect(() => {
-    setPlanning(fetchedPlanning);
-  }, [fetchedPlanning]);
+    setPlanningActual(planning);
+    setChildData({firstName,
+      level,
+      teacher,
+      hours,
+      hoursReels,
+      planning,})
+  }, [planning]);
 
   const fetchLevelsData = async () => {
     const schoolDoc = await getSchoolDoc();
@@ -62,14 +69,16 @@ function ChildPlanning({
   });
 
   const fetchAeshList = async () => {
-    const aeshRef = collection(db, `schools/${schoolID}/aesh`);
+    const aeshRef = collection(db, `schools/${schoolId}/aesh`);
     const querySnapshot = await getDocs(aeshRef);
     const fetchedAeshList = querySnapshot.docs.map((doc) => ({
       id: doc.id, // ajout de l'ID
       firstName: doc.data().firstName,
     }));
+    console.log(fetchedAeshList);
     setAeshList(fetchedAeshList);
   };
+
 
   useEffect(() => {
     if (levelSelected in levelsData) {
@@ -82,7 +91,7 @@ function ChildPlanning({
   useEffect(() => {
     fetchLevelsData();
     fetchAeshList();
-  }, [schoolID, childID]);
+  }, [schoolId, childID]);
 
   const handleLevelChange = (value) => {
     setLevelSelected(value);
@@ -97,7 +106,7 @@ function ChildPlanning({
 
   };
   const deleteOldPlanning = async (childID) => {
-    const cellPlanningsRef = collection(db, `schools/${schoolID}/cellPlanning`);
+    const cellPlanningsRef = collection(db, `schools/${schoolId}/cellPlanning`);
     const q = query(cellPlanningsRef, where("idChild", "==", childID));
     const querySnapshot = await getDocs(q);
 
@@ -118,7 +127,7 @@ function ChildPlanning({
 
         const querySnapshot = await getDocs(
           query(
-            collection(db, `schools/${schoolID}/cellPlanning`),
+            collection(db, `schools/${schoolId}/cellPlanning`),
             where("weekday", "==", weekday),
             where("timeslot", "==", timeslot),
             where("idAesh", "==", idAesh)
@@ -152,7 +161,7 @@ function ChildPlanning({
         const { idAesh, nameAesh } = newPlanning[weekday][timeslot];
         const docRef = doc(
           db,
-          `schools/${schoolID}/cellPlanning`,
+          `schools/${schoolId}/cellPlanning`,
           `${weekday}_${timeslot}_${childID}_${idAesh}`
         );
         batch.set(docRef, {
@@ -171,7 +180,7 @@ function ChildPlanning({
 
   const updateChild = async (childID, updatedChildData) => {
     try {
-      const childRef = doc(db, `schools/${schoolID}/children`, childID);
+      const childRef = doc(db, `schools/${schoolId}/children`, childID);
       await updateDoc(childRef, updatedChildData);
       setChildData(updatedChildData);
       
@@ -191,6 +200,7 @@ function ChildPlanning({
    
     try {
       const formValues = await form.validateFields();
+      console.log("formulaire", formValues )
       const result = {};
       const childName = formValues.firstName;
   
@@ -206,13 +216,13 @@ function ChildPlanning({
             result[weekday][timeslot] = { idAesh, nameAesh };
           }
         }
-      }
-  
+      }  
       await updateDatabase(result, childName);
       await updateChild(childID, {
         firstName: formValues.firstName,
         level: formValues.level,
         teacher: formValues.teacher,
+        hours: `${formValues.startHours}:${String(formValues.startMinutes).padStart(2, '0')}`
 
       });
 
@@ -240,7 +250,7 @@ function ChildPlanning({
         }
       }
       onSave()
-      setPlanning(result);
+      setPlanningActual(result);
       setIsEditing(false);
     } catch (error) {
       console.error("Failed to get form values: ", error);
@@ -253,31 +263,23 @@ function ChildPlanning({
     return querySnapshot.docs[0];
   };
   
-  const timeSlots = ["Matin1", "Matin2", "AMidi1", "AMidi2"];
+  const timeSlots = ["Matin 1", "Matin 2", "Après-midi 1", "Après-midi 2"];
   const weekDays = ["Lundi", "Mardi", "Jeudi", "Vendredi"];
   
-  const renderTimeSlotLabel = (timeSlot) => {
-    switch (timeSlot) {
-      case "Matin1": return "Matin 1";
-      case "Matin2": return "Matin 2";
-      case "AMidi1": return "Après-midi 1";
-      case "AMidi2": return "Après-midi 2";
-      default: return "";
-    }
-  };
+
   
   useEffect(() => {
     weekDays.forEach((weekday) => {
       timeSlots.forEach((timeslot) => {
         form.setFieldsValue({
           [`${weekday}_${timeslot}`]: {
-            value: fetchedPlanning[weekday]?.[timeslot]?.idAesh || "",
-            label: fetchedPlanning[weekday]?.[timeslot]?.nameAesh || "",
+            value: planningActual[weekday]?.[timeslot]?.idAesh || "",
+            label: planningActual[weekday]?.[timeslot]?.nameAesh || "",
           },
         });
       });
     });
-  }, [fetchedPlanning]);
+  }, [planningActual]);
 
   
 
@@ -320,7 +322,7 @@ function ChildPlanning({
           {timeSlots.map((timeSlot) => (
             <Row key={timeSlot}>
               <Col className="border p-1" span={4}>
-                {renderTimeSlotLabel(timeSlot)}
+                {timeSlot}
               </Col>
               {weekDays.map((day) => (
                 <Col key={day} span={5} className="p-1 border">
@@ -329,8 +331,8 @@ function ChildPlanning({
                       name={`${day}_${timeSlot}`}
                       className="m-0"
                       initialValue={{
-                        value: planning[day]?.[timeSlot]?.idAesh || "",
-                        label: planning[day]?.[timeSlot]?.nameAesh || "",
+                        value: planningActual[day]?.[timeSlot]?.idAesh || "",
+                        label: planningActual[day]?.[timeSlot]?.nameAesh || "",
                       }}
                     >
                       <Select
@@ -338,18 +340,18 @@ function ChildPlanning({
                         style={{ width: "100%" }}
                         labelInValue
                         value={
-                          planning[day]?.[timeSlot]
+                          planningActual[day]?.[timeSlot]
                             ? {
-                                value: planning[day]?.[timeSlot]?.idAesh || "",
+                                value: planningActual[day]?.[timeSlot]?.idAesh || "",
                                 label:
-                                  planning[day]?.[timeSlot]?.nameAesh || "",
+                                planningActual[day]?.[timeSlot]?.nameAesh || "",
                               }
                             : undefined
                         }
                         onChange={(value) => {
                           if (!value) return;
                           const { key, label } = value;
-                          setPlanning((prevState) => {
+                          setPlanningActual((prevState) => {
                             return {
                               ...prevState,
                               [day]: {
@@ -357,6 +359,7 @@ function ChildPlanning({
                                 [timeSlot]: {
                                   ...prevState[day]?.[timeSlot],
                                   nameAesh: label,
+                                  idAesh: key, // Add this line to update the idAesh
                                 },
                               },
                             };
@@ -371,7 +374,7 @@ function ChildPlanning({
                       </Select>
                     </Form.Item>
                   ) : (
-                    planning[day]?.[timeSlot]?.nameAesh || ""
+                    planningActual[day]?.[timeSlot]?.nameAesh || ""
                   )}
                 </Col>
               ))}
@@ -460,7 +463,7 @@ function ChildPlanning({
 
           <div className="border p-1 flex flex-row justify-between">
             <span>Différence : </span>
-            <span>{subtractTime(hours, hoursReels)}</span>
+            <span>{subtractTime(hoursReels,hours)}</span>
           </div>
         </div>
       </Form>

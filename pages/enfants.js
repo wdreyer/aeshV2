@@ -5,31 +5,101 @@ import { useEffect, useState } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
 import Child from "../components/Lists/Child";
 import { auth, db } from "../firebaseConfig";
+import {subtractTime} from '../modules/time'
+import { calculHours } from "../modules/calculHours";
+import ChildPlanning from "../components/Plannings/ChildPlanning";
 
 function childrenPage() {
   const [user, loading, error] = useAuthState(auth);
   const [childrenData, setChildrenData] = useState([]);
   const [schoolId, setSchoolId] = useState(null);
+  const [schoolRates, setSchoolRates] = useState({})
 
+   const getSchoolDoc = async () => {
+    const q = query(collection(db, "schools"), where("userId", "==", user.uid));
+    const querySnapshot = await getDocs(q);
+    return querySnapshot.docs[0];
+  };
 
-    const fetchChildren = async () => {
-      if (!loading && user) {
-        const schoolDoc = await getSchoolDoc();
-        setSchoolId(schoolDoc.id);
-        const childrenSnapshot = await getDocs(collection(schoolDoc.ref, "children"));
-        setChildrenData(childrenSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+  const fetchChildPlanning = async (childID, schoolId,schoolTime) => {
+    if (schoolId && childID) {
+      try {
+        const cellPlanningsRef = collection(
+          db,
+          `schools/${schoolId}/cellPlanning`
+        );
+        const q = query(cellPlanningsRef, where("idChild", "==", childID));
+        const querySnapshot = await getDocs(q);
+        const fetchedPlann = querySnapshot.docs.reduce((acc, doc) => {
+          const { weekday, timeslot, nameAesh, idAesh } = doc.data();
+          return {
+            ...acc,
+            [weekday]: {
+              ...acc[weekday],
+              [timeslot]: { nameAesh, idAesh },
+            },
+          };
+        }, {});
+        return {
+          childID,
+          hoursReels: calculHours(fetchedPlann, schoolTime),
+          planning: fetchedPlann
+        };
+      } catch (error) {
+        console.error("Error fetching planning data:", error);
+        return null;
       }
-    };
+    } else {
+      console.warn("Cannot fetch planning data for undefined child or school");
+      return null;
+    }
+  };
+
+  const fetchChildren = async () => {
+    if (!loading && user) {
+      const schoolDoc = await getSchoolDoc();
+      const schoolTime = await getSchoolTimeObj();
+      setSchoolId(schoolDoc.id)
+         
+      const childrenSnapshot = await getDocs(collection(schoolDoc.ref, "children"));
+      const children = childrenSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+  
+      const childrenPlannings = await Promise.all(children.map(child => fetchChildPlanning(child.id,schoolDoc.id,schoolTime)));
+  
+      // Combine children data with their respective planning data
+      const updatedChildrenData = children.map((child, index) => {
+        const planningData = childrenPlannings[index];
+        return {
+          ...child,
+          planning: planningData ? planningData.planning : {},
+          hoursReels: planningData ? planningData.hoursReels : '00:00',
+        };
+      });
+     
+      setChildrenData(updatedChildrenData);
+    }
+  };
 
     useEffect(() => {
     fetchChildren();
   }, [user, loading]);
 
-
-  const getSchoolDoc = async () => {
-    const q = query(collection(db, "schools"), where("userId", "==", user.uid));
-    const querySnapshot = await getDocs(q);
-    return querySnapshot.docs[0];
+  const getSchoolTimeObj = async () => {
+    const schoolDoc = await getSchoolDoc();
+      const { timeObj } = schoolDoc.data();
+      const durations = Object.entries(timeObj).map(([slot, time]) => {
+        // Check if this is a start or end time
+        const isStart = slot.includes("Start");
+        const slotName = slot.split(".")[0];
+        if (!isStart) {
+          return {
+            slot: slotName,
+            duration: subtractTime(time, timeObj[`${slotName}.Start`])
+          };
+        }
+      });
+    
+      return durations.filter(duration => duration !== undefined);
   };
 
   const children = childrenData.map((data, i) => {
@@ -42,8 +112,11 @@ function childrenPage() {
         teacher={data.teacher}
         hoursReels={data.hoursReels}
         hours={data.hours}
-        schoolID={schoolId}
+        schoolId={schoolId}
         onSave={fetchChildren}
+        schoolRates={schoolRates}
+        planning={data.planning}
+    
       />
     );
   });

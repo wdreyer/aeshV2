@@ -6,26 +6,25 @@ import {
   AiOutlineDelete,
   AiOutlineCalendar,
 } from "react-icons/ai";
-import { useState } from "react";
-function Aesh({ aeshID, firstName, hours, schoolID }) {
+import { collection, query, where, getDocs, writeBatch,doc, deleteDoc } from "firebase/firestore";
+import { auth, db } from "../../firebaseConfig";
+import { useAuthState } from "react-firebase-hooks/auth";
+import AeshPlanning from "../Plannings/AeshPlanning";
+import { useEffect, useState } from "react";
+import { calculHours } from "../../modules/calculHours";
+import { subtractTime } from "../../modules/time";
+function Aesh({planning,onSave, aeshId, firstName, level, teacher, hours,schoolId, hoursReels }) {
+  const [form] = Form.useForm();
   const { confirm } = Modal;
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
 
-  const handleEditClick = () => {
-    setIsEditing(true);
-  };
-  const handleSaveClick = () => {
 
-    setIsEditing(false);
-  };
-
-  const handleButtonClick = async () => {
-    setIsEditing(!isEditing)
-  };
-
-  const showModal = () => {
+  
+  const showModal = async () => {
     setIsModalOpen(true);
-  };
+  }; 
+
   const handleOk = () => {
     setIsModalOpen(false);
   };
@@ -33,59 +32,69 @@ function Aesh({ aeshID, firstName, hours, schoolID }) {
     setIsModalOpen(false);
   };
 
-  console.log("in the aesh",schoolID)
-
 
   return (
     <>
-    
       <div
-        className='border p-2 shadow-md  text-l font-semibold bg-opacity-40 backdrop-blur-md bg-green-400 '
+        className={` border p-2 shadow-md  text-l font-semibold  ${
+          level === "CP"
+            ? "bg-opacity-40 backdrop-blur-md bg-green-400"
+            : level === "CE1"
+            ? "bg-opacity-40 backdrop-blur-md bg-green-500"
+            : level === "CE2"
+            ? "bg-opacity-40 backdrop-blur-md bg-green-400"
+            : level === "CM1"
+            ? "bg-opacity-40 backdrop-blur-md bg-green-700"
+            : level === "CM2"
+            ? "bg-opacity-40 backdrop-blur-md bg-green-800"
+            : "bg-opacity-40 backdrop-blur-md bg-green-400"
+        }`}
       >
         <Row>
           <Col span={4} className="flex items-center border-r pl-2">
             {firstName}
           </Col>
-          <Col span={3} className="flex items-center border-r pl-2">
-          {hours}
-          </Col>
           <Col
-            span={3}
+            span={5}
             className="flex items-center text-center px-2 border-r pl-2"
           >
-           00:00
+            {hours}
           </Col>
           <Col
-            span={3}
+            span={5}
             className="flex items-center text-center px-2 border-r pl-2"
           >
-            00:00
+           {hoursReels}
           </Col>
-          <Col span={3} className="flex-row text-center text-3xl ">
-          <AiOutlineCalendar
-            onClick={showModal}
-            className="inline hover:text-black text-gray-600 cursor-pointer mr-2"
-          />
-          <AiOutlineDelete className="inline hover:text-black text-gray-600 cursor-pointer" />
-        </Col>
-      
+          <Col
+            span={5}
+            className="flex items-center text-center px-2 border-r pl-2"
+          >
+           {subtractTime(hoursReels,hours)}
+          </Col>
+          <Col span={5} className="flex-row text-center text-3xl ">
+            <AiOutlineCalendar
+              onClick={showModal}
+              className="inline hover:text-black text-gray-600 cursor-pointer mr-2"
+            />
+            <AiOutlineDelete className="inline hover:text-black text-gray-600 cursor-pointer" />
+          </Col>
         </Row>
       </div>
       <Modal
-      title={"Planning de " + firstName}
-      onOk={handleOk}
-      onCancel={handleCancel}
-      footer={null}
-      width={900}
-      visible={isModalOpen}
-    >
-      <div className="flex items-center justify-between">
-      </div>
-      <div className="absolute p-1 rounded text-gray-500 hover:text-black hover:bg-gray-100 top-5 right-10">
-    </div>
-    </Modal>
+        title={"Planning de " + firstName}
+        onOk={handleOk}
+        onCancel={handleCancel}
+        footer={null}
+        width={900}
+        open={isModalOpen}
+      >
+      
+          <AeshPlanning         
+            {...{planning ,onSave, hoursReels, firstName, aeshId, level, teacher, hours, schoolId }}
+          />
 
-    
+      </Modal>
     </>
   );
 }

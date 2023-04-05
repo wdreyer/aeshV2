@@ -10,58 +10,25 @@ import { collection, query, where, getDocs, writeBatch,doc, deleteDoc } from "fi
 import { auth, db } from "../../firebaseConfig";
 import { useAuthState } from "react-firebase-hooks/auth";
 import ChildPlanning from "../Plannings/ChildPlanning";
-
-import { useState } from "react";
-import { useStepContext } from "@mui/material";
-function Child({onSave, childID, firstName, level, teacher, hours, hoursReels,schoolID }) {
+import { useEffect, useState } from "react";
+import { calculHours } from "../../modules/calculHours";
+import { subtractTime } from "../../modules/time";
+function Child({planning,onSave, childID, firstName, level, teacher, hours,schoolId, hoursReels }) {
   const [form] = Form.useForm();
   const { confirm } = Modal;
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
-  const [fetchedPlanning, setFetchedPlanning]= useState({})
+
 
   
-  const fetchPlanning = async () => {
-    return new Promise(async (resolve) => {
-      if (schoolID && childID) {
-        const cellPlanningsRef = collection(
-          db,
-          `schools/${schoolID}/cellPlanning`
-        );
-        const q = query(cellPlanningsRef, where("idChild", "==", childID));
-        const querySnapshot = await getDocs(q);
-        const fetchedPlann = querySnapshot.docs.reduce((acc, doc) => {
-          const { weekday, timeslot, nameAesh, idAesh  } = doc.data();
-          return {
-            ...acc,
-            [weekday]: {
-              ...acc[weekday],
-              [timeslot]: {  nameAesh, idAesh },
-            },
-          };
-        }, {});
-        resolve(fetchedPlann);
-      } else {
-        console.warn(`Cannot fetch planning data for undefined child or school`);
-        resolve();
-      }
-    });
-  };
-
   const showModal = async () => {
-   setFetchedPlanning(await fetchPlanning());
-    
-    console.log("ici ?",fetchedPlanning);
     setIsModalOpen(true);
-  };
-
+  }; 
 
   const handleOk = () => {
-
     setIsModalOpen(false);
   };
   const handleCancel = () => {
-
     setIsModalOpen(false);
   };
 
@@ -109,7 +76,7 @@ function Child({onSave, childID, firstName, level, teacher, hours, hoursReels,sc
             span={3}
             className="flex items-center text-center px-2 border-r pl-2"
           >
-            00:00
+           {subtractTime(hoursReels,hours)}
           </Col>
           <Col span={3} className="flex-row text-center text-3xl ">
             <AiOutlineCalendar
@@ -129,8 +96,8 @@ function Child({onSave, childID, firstName, level, teacher, hours, hoursReels,sc
         open={isModalOpen}
       >
       
-          <ChildPlanning
-            {...{fetchedPlanning ,onSave, hoursReels, firstName, childID, level, teacher, hours, schoolID }}
+          <ChildPlanning         
+            {...{planning ,onSave, hoursReels, firstName, childID, level, teacher, hours, schoolId }}
           />
 
       </Modal>
