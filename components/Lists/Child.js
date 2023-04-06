@@ -6,6 +6,7 @@ import {
   AiOutlineDelete,
   AiOutlineCalendar,
 } from "react-icons/ai";
+import { ExclamationCircleOutlined } from '@ant-design/icons';
 import { collection, query, where, getDocs, writeBatch,doc, deleteDoc } from "firebase/firestore";
 import { auth, db } from "../../firebaseConfig";
 import { useAuthState } from "react-firebase-hooks/auth";
@@ -30,6 +31,42 @@ function Child({planning,onSave, childID, firstName, level, teacher, hours,schoo
   };
   const handleCancel = () => {
     setIsModalOpen(false);
+  };
+
+ const showDeleteConfirm = () => {
+    confirm({
+      title: 'Voulez vous vraiment supprimer cet enfant ?',
+      icon: <ExclamationCircleOutlined />,
+      okText: 'Oui',
+      okType: 'danger',
+      cancelText: 'Non',
+      onOk() {
+        deleteChild()        
+      },
+      onCancel() {
+        return    
+      },
+    });
+  };
+
+    const deleteChild = async () => {
+    try {
+    const cellPlanningsRef = collection(db, `schools/${schoolId}/cellPlanning`);
+    const q = query(cellPlanningsRef, where("childId", "==", childID));
+    const querySnapshot = await getDocs(q);
+    const batch = writeBatch(db);
+    querySnapshot.forEach((doc) => {
+      batch.delete(doc.ref);
+    });
+    await batch.commit();
+      // Obtenir une référence au document que vous souhaitez supprimer
+  const childDocRef = doc(db, `schools/${schoolId}/children`, childID);
+  // Supprimer le document
+  await deleteDoc(childDocRef);  
+  onSave()
+    } catch (error) {
+      console.error(error);
+    }
   };
 
 
@@ -83,7 +120,7 @@ function Child({planning,onSave, childID, firstName, level, teacher, hours,schoo
               onClick={showModal}
               className="inline hover:text-black text-gray-600 cursor-pointer mr-2"
             />
-            <AiOutlineDelete className="inline hover:text-black text-gray-600 cursor-pointer" />
+            <AiOutlineDelete onClick={()=> {showDeleteConfirm()}}  className="inline hover:text-black text-gray-600 cursor-pointer" />
           </Col>
         </Row>
       </div>

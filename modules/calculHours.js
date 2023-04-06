@@ -1,34 +1,38 @@
 function calculHours(planning, rates) {
+  console.log(planning, rates);
 
-
-  // Initialisation du total à 0
+  // Initialization of the total to 0
   let totalMinutes = 0;
-  
-  // Pour chaque slot dans rates
+
+  // For each slot in rates
   rates.forEach(rate => {
-    // Initialisation du compteur de slots à 0
+    // Initialization of the slot counter to 0
     let slotCount = 0;
-    
-    // Parcourir chaque jour dans planning
+
+    // Iterate through each day in planning
     Object.keys(planning).forEach(day => {
-      // Vérifier si le slot est présent et non vide pour ce jour
-      if (planning[day][rate.slot] && planning[day][rate.slot].nameAesh) {
-        // Incrémenter le compteur de slots
+      // Check if the slot is present and non-empty for this day (either nameChild or nameAesh)
+      if (
+        planning[day][rate.slot] &&
+        (planning[day][rate.slot].nameChild || planning[day][rate.slot].nameAesh)
+      ) {
+        // Increment the slot counter
         slotCount++;
       }
     });
-    
-    // Ajouter la durée totale pour ce slot au total
-    totalMinutes += slotCount * (Number(rate.duration.split(':')[0]) * 60 + Number(rate.duration.split(':')[1]));
+
+    // Add the total duration for this slot to the total
+    totalMinutes +=
+      slotCount *
+      (Number(rate.duration.split(':')[0]) * 60 + Number(rate.duration.split(':')[1]));
   });
-  
-  // Convertir le total en heures et minutes
+
+  // Convert the total to hours and minutes
   let hours = Math.floor(totalMinutes / 60);
   let minutes = totalMinutes % 60;
-  
-  // Retourner le résultat sous forme HH:MM
-  return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
 
+  // Return the result in the format HH:MM
+  return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
 }
 
-export {calculHours};
+export { calculHours };

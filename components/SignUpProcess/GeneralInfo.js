@@ -295,7 +295,7 @@ function GeneralInfo ({ saveData, nextStep }) {
           <Form.Item
           label="Nombre de niveaux"
         >
-          <InputNumber min={1} max={10} onChange={handleLevelCount} />
+          <InputNumber min={0} max={10} onChange={handleLevelCount} />
         </Form.Item>
           {/* Niveaux */}
           {levels.map((level, levelIndex) => (

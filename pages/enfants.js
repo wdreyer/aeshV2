@@ -1,5 +1,5 @@
-import { Col, Row } from "antd";
-import { collection, getDocs, query, where } from "firebase/firestore";
+import { Button, Modal, Col, Row } from "antd";
+import { collection, getDocs, query, updateDoc, where, doc } from "firebase/firestore";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
@@ -7,13 +7,27 @@ import Child from "../components/Lists/Child";
 import { auth, db } from "../firebaseConfig";
 import {subtractTime} from '../modules/time'
 import { calculHours } from "../modules/calculHours";
-import ChildPlanning from "../components/Plannings/ChildPlanning";
+import AddChild from "../components/Lists/AddChild";
 
 function childrenPage() {
   const [user, loading, error] = useAuthState(auth);
   const [childrenData, setChildrenData] = useState([]);
   const [schoolId, setSchoolId] = useState(null);
   const [schoolRates, setSchoolRates] = useState({})
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+
+  const showModal = async () => {
+    setIsModalOpen(true);
+  }; 
+
+  const handleOk = () => {
+    fetchChildren()
+    setIsModalOpen(false);
+  };
+  const handleCancel = () => {
+    setIsModalOpen(false);
+  };
 
    const getSchoolDoc = async () => {
     const q = query(collection(db, "schools"), where("userId", "==", user.uid));
@@ -28,7 +42,7 @@ function childrenPage() {
           db,
           `schools/${schoolId}/cellPlanning`
         );
-        const q = query(cellPlanningsRef, where("idChild", "==", childID));
+        const q = query(cellPlanningsRef, where("childId", "==", childID));
         const querySnapshot = await getDocs(q);
         const fetchedPlann = querySnapshot.docs.reduce((acc, doc) => {
           const { weekday, timeslot, nameAesh, idAesh } = doc.data();
@@ -40,11 +54,24 @@ function childrenPage() {
             },
           };
         }, {});
+        
+          const hoursReels = calculHours(fetchedPlann, schoolTime)
+          const docRef = doc(db,`/schools/${schoolId}/children/${childID}`)
+          await updateDoc (
+            docRef, {hoursReels:hoursReels}
+          )      
+        
+          
+     
         return {
           childID,
-          hoursReels: calculHours(fetchedPlann, schoolTime),
+          hoursReels : hoursReels,         
           planning: fetchedPlann
-        };
+        };   
+       
+
+
+
       } catch (error) {
         console.error("Error fetching planning data:", error);
         return null;
@@ -122,6 +149,7 @@ function childrenPage() {
   });
 
   return (
+    <>
     <div className=" border rounded mb-2 text-lg font-semibold">
     <Row className=" p-2 shadow-md  text-lg font-bold">
       <Col span={4}><div className="flex items-center border-r pl-2"><strong>Prénom</strong></div></Col>
@@ -132,8 +160,24 @@ function childrenPage() {
       <Col span={3}><div className="flex items-center border-r pl-2"><strong>Différence</strong></div></Col>
       <Col span={4}  className=" pl-2"><strong>Planning et Options</strong></Col>
     </Row>
-    {children}
+    {children}    
   </div>
+  <div className="flex flex-row justify-center" >
+  <Button  onClick={showModal}>Ajouter un ou plusieurs enfants</Button>
+  </div>
+  <Modal
+  onOk={handleOk}
+  onCancel={handleCancel}
+  footer={null}
+  width={900}
+  open={isModalOpen}
+>
+<AddChild onSave={handleOk}/>
+
+ 
+
+</Modal>
+</>
   );
 }
 

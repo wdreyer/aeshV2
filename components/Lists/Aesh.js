@@ -1,25 +1,55 @@
-import { Row, Col, Modal, Form } from "antd";
+import { ExclamationCircleOutlined } from '@ant-design/icons';
+import { Col, Form, Modal, Row } from "antd";
+import { collection, deleteDoc, doc, getDocs, query, where, writeBatch } from "firebase/firestore";
+import { useState } from "react";
 import {
-  AiOutlineSave,
-  AiOutlineUser,
-  AiOutlineEdit,
-  AiOutlineDelete,
   AiOutlineCalendar,
+  AiOutlineDelete
 } from "react-icons/ai";
-import { collection, query, where, getDocs, writeBatch,doc, deleteDoc } from "firebase/firestore";
-import { auth, db } from "../../firebaseConfig";
-import { useAuthState } from "react-firebase-hooks/auth";
-import AeshPlanning from "../Plannings/AeshPlanning";
-import { useEffect, useState } from "react";
-import { calculHours } from "../../modules/calculHours";
+import { db } from "../../firebaseConfig";
 import { subtractTime } from "../../modules/time";
-function Aesh({planning,onSave, aeshId, firstName, level, teacher, hours,schoolId, hoursReels }) {
+import AeshPlanning from "../Plannings/AeshPlanning";
+function Aesh({planning,onSave, idAesh, firstName, level, teacher, hours,schoolId, hoursReels }) {
   const [form] = Form.useForm();
   const { confirm } = Modal;
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
 
+  const showDeleteConfirm = () => {
+    confirm({
+      title: 'Voulez vous vraiment supprimer cet enfant ?',
+      icon: <ExclamationCircleOutlined />,
+      okText: 'Oui',
+      okType: 'danger',
+      cancelText: 'Non',
+      onOk() {
+        deleteAesh()        
+      },
+      onCancel() {
+        return    
+      },
+    });
+  };
 
+    const deleteAesh = async () => {
+    try {
+    const cellPlanningsRef = collection(db, `schools/${schoolId}/cellPlanning`);
+    const q = query(cellPlanningsRef, where("idAesh", "==", idAesh));
+    const querySnapshot = await getDocs(q);
+    const batch = writeBatch(db);
+    querySnapshot.forEach((doc) => {
+      batch.delete(doc.ref);
+    });
+    await batch.commit();
+      // Obtenir une référence au document que vous souhaitez supprimer
+  const aeshDocRef = doc(db, `schools/${schoolId}/aesh`, idAesh);
+  // Supprimer le document
+  await deleteDoc(aeshDocRef);  
+  onSave()
+    } catch (error) {
+      console.error(error);
+    }
+  };
   
   const showModal = async () => {
     setIsModalOpen(true);
@@ -77,7 +107,7 @@ function Aesh({planning,onSave, aeshId, firstName, level, teacher, hours,schoolI
               onClick={showModal}
               className="inline hover:text-black text-gray-600 cursor-pointer mr-2"
             />
-            <AiOutlineDelete className="inline hover:text-black text-gray-600 cursor-pointer" />
+            <AiOutlineDelete onClick={()=> {showDeleteConfirm()}} className="inline hover:text-black text-gray-600 cursor-pointer" />
           </Col>
         </Row>
       </div>
@@ -91,7 +121,7 @@ function Aesh({planning,onSave, aeshId, firstName, level, teacher, hours,schoolI
       >
       
           <AeshPlanning         
-            {...{planning ,onSave, hoursReels, firstName, aeshId, level, teacher, hours, schoolId }}
+            {...{planning ,onSave, hoursReels, firstName, idAesh, level, teacher, hours, schoolId }}
           />
 
       </Modal>

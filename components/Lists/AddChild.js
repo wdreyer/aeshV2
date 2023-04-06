@@ -1,36 +1,30 @@
 import {
-    Form,
-    Input,
-    InputNumber,
-    Select,
-    Button,
-    Row,
-    Col,
-    Divider,
-    Space,
-    Rate,
-  } from "antd";
-  import { useState, useEffect } from "react";
+  Col,
+  Form,
+  Input,
+  InputNumber,
+  Row,
+  Select
+} from "antd";
+import { useEffect, useState } from "react";
   
-  import { useAuthState } from "react-firebase-hooks/auth";
   import {
-    getAuth,
-  } from "firebase/auth";
-  import {
-    getFirestore,
-    collection,
-    addDoc,
-    doc,
-    setDoc,
-    query,
-    where,
-    getDocs,
-  } from "firebase/firestore";
-  import { db } from "../../firebaseConfig";
+  getAuth,
+} from "firebase/auth";
+import {
+  addDoc,
+  collection,
+  getDocs,
+  getFirestore,
+  query,
+  where
+} from "firebase/firestore";
+import { useAuthState } from "react-firebase-hooks/auth";
+import { db } from "../../firebaseConfig";
   const auth = getAuth();
   const firestore = getFirestore();
 
-function ChildrenInfo({prevStep, nextStep}) {
+function AddChild({onSave}) {
     const [user, loading, error] = useAuthState(auth);
     const [numChildren, setNumChildren] = useState(0);
     const [childForms, setChildForms] = useState([]);
@@ -95,18 +89,17 @@ const handleSubmit = async () => {
     await addDoc(collection(db, `schools/${schoolDoc.id}/children`), child);
   });
 
-  
-
+console.log(onSave)
+onSave()
 } catch (error) {
-  console.error('Erreur lors de l`ajout des enfants :', error.message);
+  console.error('Erreur lors de lajout des enfants :', error.message);
 }
 
 
 };
 
   return (
-    <div className="container mx-auto my-8">
-      <div className="shadow-md p-6 bg-white rounded-lg">
+      <div >
         <h2 className="text-xl font-bold mb-4">Ajout des enfants :</h2>
 
         <Form onFinish={handleSubmit} form={form}>
@@ -217,32 +210,17 @@ const handleSubmit = async () => {
               </Row>
             </div>
           ))}
-          <div className="w-full  justify-between flex  mb-4 mt-4">
-            <button
-              className="drop-shadow-md bg-[#FAD4D8]  hover:text-black hover:bg-[#FAD4E8] text-gray-700 font-bold pt-2 py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-              onClick={(e) => prevStep()}
-            >
-              Précedent
-            </button>
-            <button
-              className="  hover:text-black text-sm  text-gray-700  pt-4  focus:outline-none focus:shadow-outline"
-              type="submit"
-            >
-              Enregistrer et reprendre plus tard
-            </button>
-            <button
-              className="drop-shadow-md bg-[#FAD4D8]  hover:text-black hover:bg-[#FAD4E8] text-gray-700 font-bold pt-2 py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-              type="submit"
-            >
-              Suivant
-            </button>
-          </div>
+          <button
+          className="drop-shadow-md bg-[#FAD4D8]  hover:text-black hover:bg-[#FAD4E8] text-gray-700 font-bold pt-2 py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+          type="submit"
+        >Enregistrer</button>
         </Form>
+      
       </div>
-    </div>
+
   );
 }
 
-export default ChildrenInfo;
+export default AddChild;
   
 

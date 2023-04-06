@@ -1,5 +1,5 @@
-import { Col, Row } from "antd";
-import { collection, getDocs, query, where } from "firebase/firestore";
+import { Button, Modal,Col, Row } from "antd";
+import { collection, getDocs, query, where, doc, updateDoc } from "firebase/firestore";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
@@ -7,12 +7,27 @@ import Aesh from "../components/Lists/Aesh";
 import { auth, db } from "../firebaseConfig";
 import {subtractTime} from '../modules/time'
 import { calculHours } from "../modules/calculHours";
+import AddAesh from "../components/Lists/AddAesh";
+
 
 function aeshPage() {
   const [user, loading, error] = useAuthState(auth);
   const [aeshData, setAeshData] = useState([]);
   const [schoolId, setSchoolId] = useState(null);
   const [schoolRates, setSchoolRates] = useState({})
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const showModal = async () => {
+    setIsModalOpen(true);
+  }; 
+
+  const handleOk = () => {
+    fetchAesh()
+    setIsModalOpen(false);
+  };
+  const handleCancel = () => {
+    setIsModalOpen(false);
+  };
 
    const getSchoolDoc = async () => {
     const q = query(collection(db, "schools"), where("userId", "==", user.uid));
@@ -20,28 +35,37 @@ function aeshPage() {
     return querySnapshot.docs[0];
   };
 
-  const fetchAeshPlanning = async (aeshID, schoolId,schoolTime) => {
-    if (schoolId && aeshID) {
+  const fetchAeshPlanning = async (idAesh, schoolId,schoolTime) => {
+   
+    
+    if (schoolId && idAesh) {
       try {
         const cellPlanningsRef = collection(
           db,
           `schools/${schoolId}/cellPlanning`
         );
-        const q = query(cellPlanningsRef, where("idAesh", "==", aeshID));
+        const q = query(cellPlanningsRef, where("idAesh", "==", idAesh));
         const querySnapshot = await getDocs(q);
         const fetchedPlann = querySnapshot.docs.reduce((acc, doc) => {
-          const { weekday, timeslot, nameChild, idChild } = doc.data();
+          const { weekday, timeslot, nameChild, childId } = doc.data();
           return {
             ...acc,
             [weekday]: {
               ...acc[weekday],
-              [timeslot]: { nameChild, idChild },
+              [timeslot]: { nameChild, childId },
             },
           };
         }, {});
+
+        const hoursReels = calculHours(fetchedPlann, schoolTime)
+        const docRef = doc(db,`/schools/${schoolId}/aesh/${idAesh}`)
+        await updateDoc (
+          docRef, {hoursReels:hoursReels}
+        )  
+
         return {
-          aeshID,
-          hoursReels: calculHours(fetchedPlann, schoolTime),
+          idAesh,
+          hoursReels: hoursReels,
           planning: fetchedPlann
         };
       } catch (error) {
@@ -105,7 +129,7 @@ function aeshPage() {
     return (
       <Aesh
         key={data.id}
-        aeshID={data.id}
+        idAesh={data.id}
         firstName={data.firstName}
         level={data.level}
         teacher={data.teacher}
@@ -121,6 +145,7 @@ function aeshPage() {
   });
 
   return (
+    <>
     <div className=" border rounded mb-2 text-lg font-semibold">
     <Row className=" p-2 shadow-md  text-lg font-bold">
       <Col span={4}><div className="flex items-center border-r pl-2"><strong>Prénom</strong></div></Col>
@@ -131,6 +156,19 @@ function aeshPage() {
     </Row>
     {aesh}
   </div>
+  <div className="flex flex-row justify-center" >
+  <Button  onClick={showModal}>Ajouter un ou plusieurs Aesh</Button>
+  </div>
+  <Modal
+  onOk={handleOk}
+  onCancel={handleCancel}
+  footer={null}
+  width={900}
+  open={isModalOpen}
+>
+<AddAesh onSave={handleOk}/>
+</Modal>
+</>
   );
 }
 

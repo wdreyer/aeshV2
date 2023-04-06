@@ -43,14 +43,14 @@ async function updateHours(schoolId) {
 
   cellPlanningSnap.forEach((doc) => {
     const data = doc.data();
-    const {idChild, idAesh, timeslot} = data;
+    const {childId, idAesh, timeslot} = data;
 
     const duration = calculateDuration(timeObj, timeslot);
 
-    if (childrenHours[idChild]) {
-      childrenHours[idChild] += duration;
+    if (childrenHours[childId]) {
+      childrenHours[childId] += duration;
     } else {
-      childrenHours[idChild] = duration;
+      childrenHours[childId] = duration;
     }
 
     if (aeshHours[idAesh]) {
@@ -61,9 +61,9 @@ async function updateHours(schoolId) {
   });
 
   // Update hours for each child
-  for (const [idChild, minutes] of Object.entries(childrenHours)) {
+  for (const [childId, minutes] of Object.entries(childrenHours)) {
     const hoursReels = `${Math.floor(minutes / 60)}:${(minutes % 60).toString().padStart(2, '0')}`;
-    await childrenRef.doc(idChild).update({hoursReels});
+    await childrenRef.doc(childId).update({hoursReels});
   }
 
   // Update hours for each AESH

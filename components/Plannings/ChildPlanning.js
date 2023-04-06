@@ -10,6 +10,8 @@ import {
   deleteDoc,
   updateDoc, 
 } from "firebase/firestore";
+import { ExclamationCircleOutlined } from '@ant-design/icons';
+
 
 import { useAuthState } from "react-firebase-hooks/auth";
 import { auth, db } from "../../firebaseConfig";
@@ -107,7 +109,7 @@ function ChildPlanning({
   };
   const deleteOldPlanning = async (childID) => {
     const cellPlanningsRef = collection(db, `schools/${schoolId}/cellPlanning`);
-    const q = query(cellPlanningsRef, where("idChild", "==", childID));
+    const q = query(cellPlanningsRef, where("childId", "==", childID));
     const querySnapshot = await getDocs(q);
 
     const batch = writeBatch(db);
@@ -150,7 +152,7 @@ function ChildPlanning({
     await batch.commit();
   };
 
-  const updateDatabase = async (newPlanning, childName) => {
+  const updateDatabase = async (newPlanning, nameChild) => {
     await deleteOldPlanning(childID);
     await deleteAeshFromNewPlanning(newPlanning);
 
@@ -165,8 +167,8 @@ function ChildPlanning({
           `${weekday}_${timeslot}_${childID}_${idAesh}`
         );
         batch.set(docRef, {
-          idChild: childID,
-          nameChild: childName,
+          childId: childID,
+          nameChild: nameChild,
           idAesh,
           nameAesh,
           weekday,
@@ -202,7 +204,7 @@ function ChildPlanning({
       const formValues = await form.validateFields();
       console.log("formulaire", formValues )
       const result = {};
-      const childName = formValues.firstName;
+      const nameChild = formValues.firstName;
   
       // Process form values
       for (const key in formValues) {
@@ -217,7 +219,8 @@ function ChildPlanning({
           }
         }
       }  
-      await updateDatabase(result, childName);
+      console.log(result)
+      await updateDatabase(result, nameChild);
       await updateChild(childID, {
         firstName: formValues.firstName,
         level: formValues.level,

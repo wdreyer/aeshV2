@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Row, Col, Input, Select, Form, InputNumber, } from "antd";
+import { Row, Col, Input, Select, Form, InputNumber } from "antd";
 import {
   collection,
   query,
@@ -8,7 +8,7 @@ import {
   writeBatch,
   doc,
   deleteDoc,
-  updateDoc, 
+  updateDoc,
 } from "firebase/firestore";
 
 import { useAuthState } from "react-firebase-hooks/auth";
@@ -25,7 +25,7 @@ function AeshPlanning({
   hours,
   hoursReels,
   schoolId,
-  aeshID,
+  idAesh,
   planning,
   onSave,
 }) {
@@ -38,24 +38,20 @@ function AeshPlanning({
   const [startHours, startMinutes] = hours
     .split(":")
     .map((value) => parseInt(value, 10));
-    const [aeshData, setAeshData] = useState({
-      firstName,
-      level,
-      teacher,
-      hours,
-      hoursReels,
-      planning,
-    })
+  const [aeshData, setAeshData] = useState({
+    firstName,
+    level,
+    teacher,
+    hours,
+    hoursReels,
+    planning,
+  });
 
   useEffect(() => {
     setPlanningActual(planning);
-    setAeshData({firstName,
-      level,
-      teacher,
-      hours,
-      hoursReels,
-      planning,})
+    setAeshData({ firstName, hours, hoursReels, planning });
   }, [planning]);
+
 
   const fetchChildList = async () => {
     const aeshRef = collection(db, `schools/${schoolId}/children`);
@@ -67,48 +63,60 @@ function AeshPlanning({
     setChildList(fetchedChilList);
   };
 
+ 
+
   useEffect(() => {
-    fetchChildList
-  }, [schoolId, aeshID]);
+    fetchChildList();
+  }, [schoolId, idAesh]);
 
   const handleLevelChange = (value) => {
     setLevelSelected(value);
   };
   const handleButtonClick = async () => {
-    if (isEditing) {      
+    if (isEditing) {
       await onFinish();
-    }
-    else {
+    } else {
       setIsEditing(!isEditing);
     }
-
   };
-  const deleteOldPlanning = async (aeshID) => {
-    const cellPlanningsRef = collection(db, `schools/${schoolId}/cellPlanning`);
-    const q = query(cellPlanningsRef, where("idAesh", "==", aeshID));
-    const querySnapshot = await getDocs(q);
 
+
+  const deleteOldPlanning = async (idAesh) => {
+    console.log('deleteOldPlanning called with idAesh:', idAesh);
+    
+    const cellPlanningsRef = collection(db, `schools/${schoolId}/cellPlanning`);
+    const q = query(cellPlanningsRef, where("idAesh", "==", idAesh));
+    const querySnapshot = await getDocs(q);
+  
+    console.log('querySnapshot size:', querySnapshot.size);
+  
     const batch = writeBatch(db);
     querySnapshot.forEach((doc) => {
+      console.log('Deleting document with ID:', doc.id);
       batch.delete(doc.ref);
     });
-
+  
     await batch.commit();
+    console.log('Batch commit complete');
   };
 
-  const deleteAeshFromNewPlanning = async (newPlanning) => {
+  const deleteChildFromNewPlanning = async (newPlanning) => {
+    
     const batch = writeBatch(db);
+    console.log("New planning inside deleteChildFromNewPlanning: ", newPlanning);
+
+
 
     for (const weekday in newPlanning) {
       for (const timeslot in newPlanning[weekday]) {
-        const { idAesh } = newPlanning[weekday][timeslot];
+        const { childId } = newPlanning[weekday][timeslot];
 
         const querySnapshot = await getDocs(
           query(
             collection(db, `schools/${schoolId}/cellPlanning`),
             where("weekday", "==", weekday),
             where("timeslot", "==", timeslot),
-            where("idAesh", "==", idAesh)
+            where("childId", "==", childId)
           )
         );
 
@@ -128,23 +136,21 @@ function AeshPlanning({
     await batch.commit();
   };
 
-  const updateDatabase = async (newPlanning, aeshName) => {
-    await deleteOldPlanning(aeshID);
-    await deleteAeshFromNewPlanning(newPlanning);
-
+  const updateDatabase = async (newPlanning, nameAesh) => {
+    await deleteOldPlanning(idAesh);
+    await deleteChildFromNewPlanning(newPlanning);
     const batch = writeBatch(db);
-
     for (const weekday in newPlanning) {
       for (const timeslot in newPlanning[weekday]) {
-        const { idAesh, nameAesh } = newPlanning[weekday][timeslot];
+        const { childId, nameChild } = newPlanning[weekday][timeslot];
         const docRef = doc(
           db,
           `schools/${schoolId}/cellPlanning`,
-          `${weekday}_${timeslot}_${aeshID}_${idAesh}`
+          `${weekday}_${timeslot}_${idAesh}_${childId}`
         );
         batch.set(docRef, {
-          idAesh: aeshID,
-          nameAesh: aeshName,
+          childId:childId,
+          nameChild: nameChild,
           idAesh,
           nameAesh,
           weekday,
@@ -156,96 +162,67 @@ function AeshPlanning({
     await batch.commit();
   };
 
-  const updateAesh = async (aeshID, updatedAeshData) => {
+  const updateAesh = async (idAesh, updatedAeshData) => {
     try {
-      const aeshRef = doc(db, `schools/${schoolId}/aesh`, aeshID);
+      const aeshRef = doc(db, `schools/${schoolId}/aesh`, idAesh);
       await updateDoc(aeshRef, updatedAeshData);
       setAeshData(updatedAeshData);
-      
     } catch (error) {
       console.error("Failed to update aesh: ", error);
     }
   };
 
   const onFinish = async () => {
-    try{
-    await form.validateFields();
-    }
-    catch (error) {
-      return
-      console.error("Failed to get form values: ", error);
-    }
-   
     try {
       const formValues = await form.validateFields();
-      console.log("formulaire", formValues )
-      const result = {};
-      const aeshName = formValues.firstName;
-  
+      const nameAesh = formValues.firstName;
+      console.log(formValues)
       // Process form values
-      for (const key in formValues) {
-        if (formValues.hasOwnProperty(key)) {
-          const [weekday, timeslot] = key.split("_");
-          const valueObj = formValues[key];
-  
-          if (valueObj?.value && valueObj?.label) {
-            const { value: idAesh, label: nameAesh } = valueObj;
-            if (!result[weekday]) result[weekday] = {};
-            result[weekday][timeslot] = { idAesh, nameAesh };
-          }
-        }
-      }  
-      await updateDatabase(result, aeshName);
-      await updateAesh(aeshID, {
+      await updateDatabase(planningActual, nameAesh);
+      await updateAesh(idAesh, {
         firstName: formValues.firstName,
-        level: formValues.level,
-        teacher: formValues.teacher,
-        hours: `${formValues.startHours}:${String(formValues.startMinutes).padStart(2, '0')}`
-
+        hours: `${formValues.startHours}:${String(
+          formValues.startMinutes
+        ).padStart(2, "0")}`,
       });
 
-
-
-  
       // Clear old values
       weekDays.forEach((weekday) => {
         timeSlots.forEach((timeslot) => {
-          if (!result[weekday] || !result[weekday][timeslot]) {
+          if (!planningActual[weekday] || !planningActual[weekday][timeslot]) {
             form.setFieldsValue({ [`${weekday}_${timeslot}`]: undefined });
           }
         });
       });
-  
+
       // Update the form values
-      for (const weekday in result) {
-        for (const timeslot in result[weekday]) {
+      for (const weekday in planningActual) {
+        for (const timeslot in planningActual[weekday]) {
           form.setFieldsValue({
             [`${weekday}_${timeslot}`]: {
-              value: result[weekday][timeslot].idAesh,
-              label: result[weekday][timeslot].nameAesh,
+              value: planningActual[weekday][timeslot].idAesh,
+              label: planningActual[weekday][timeslot].nameAesh,
             },
           });
         }
       }
-      onSave()
-      setPlanningActual(result);
+      onSave();
+      setPlanningActual(planningActual);
       setIsEditing(false);
     } catch (error) {
       console.error("Failed to get form values: ", error);
     }
   };
-  
+
   const getSchoolDoc = async () => {
     const q = query(collection(db, "schools"), where("userId", "==", user.uid));
     const querySnapshot = await getDocs(q);
     return querySnapshot.docs[0];
   };
-  
+
   const timeSlots = ["Matin 1", "Matin 2", "Après-midi 1", "Après-midi 2"];
   const weekDays = ["Lundi", "Mardi", "Jeudi", "Vendredi"];
-  
 
-  
   useEffect(() => {
     weekDays.forEach((weekday) => {
       timeSlots.forEach((timeslot) => {
@@ -259,9 +236,7 @@ function AeshPlanning({
     });
   }, [planningActual]);
 
-  console.log(planningActual)
 
-  
 
   return (
     <>
@@ -309,39 +284,49 @@ function AeshPlanning({
                       name={`${day}_${timeSlot}`}
                       className="m-0"
                       initialValue={{
-                        value: planningActual[day]?.[timeSlot]?.idChild || "",
+                        value: planningActual[day]?.[timeSlot]?.childId || "",
                         label: planningActual[day]?.[timeSlot]?.nameChild || "",
                       }}
                     >
                       <Select
+                      labelInValue
                         allowClear
                         style={{ width: "100%" }}
-                        labelInValue
                         value={
-                          planningActual[day]?.[timeSlot]
+                          planningActual[day]?.[timeSlot]?.childId
                             ? {
-                                value: planningActual[day]?.[timeSlot]?.idChild || "",
-                                label:
-                                planningActual[day]?.[timeSlot]?.nameChild || "",
+                                value: planningActual[day]?.[timeSlot]?.childId || "",
+                                label: planningActual[day]?.[timeSlot]?.nameChild || "",
                               }
                             : undefined
                         }
-                        onChange={(value) => {
-                          if (!value) return;
-                          const { key, label } = value;
-                          setPlanningActual((prevState) => {
-                            return {
-                              ...prevState,
-                              [day]: {
-                                ...prevState[day],
-                                [timeSlot]: {
-                                  ...prevState[day]?.[timeSlot],
-                                  nameChild: label,
-                                  idChild: key, 
+                        onChange={(value, option) => {
+                          if (value) {
+                            const { value: childId, children: nameChild } = option;
+                            setPlanningActual((prevState) => {
+                              return {
+                                ...prevState,
+                                [day]: {
+                                  ...prevState[day],
+                                  [timeSlot]: {
+                                    ...prevState[day]?.[timeSlot],
+                                    nameChild,
+                                    childId,
+                                  },
                                 },
-                              },
-                            };
-                          });
+                              };
+                            });
+                          } else {
+                            // Handle the case when the value is cleared
+                            setPlanningActual((prevState) => {
+                              const updatedDay = { ...prevState[day] };
+                              delete updatedDay[timeSlot];
+                              return {
+                                ...prevState,
+                                [day]: updatedDay,
+                              };
+                            });
+                          }
                         }}
                       >
                         {childList.map((child) => (
@@ -369,7 +354,6 @@ function AeshPlanning({
                 className="mb-0 w-1/2"
                 name="firstName"
                 rules={[{ required: true, message: "Champ obligatoire" }]}
-
               >
                 <Input />
               </Form.Item>
@@ -391,21 +375,19 @@ function AeshPlanning({
             </>
           ) : (
             <div className="border p-1 flex flex-row justify-between">
-              
               <span>Heures accordées : </span>
               <span>{aeshData.hours}</span>
             </div>
           )}
 
           <div className="border p-1 flex flex-row justify-between">
-            
             <span>Heures Réelles : </span>
             <span>{aeshData.hoursReels}</span>
           </div>
 
           <div className="border p-1 flex flex-row justify-between">
             <span>Différence : </span>
-            <span>{subtractTime(hoursReels,hours)}</span>
+            <span>{subtractTime(hoursReels, hours)}</span>
           </div>
         </div>
       </Form>
