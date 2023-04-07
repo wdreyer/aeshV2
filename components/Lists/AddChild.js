@@ -81,7 +81,7 @@ const handleSubmit = async () => {
       firstName: child.firstName,
       level: child.level,
       teacher: child.teacher,
-      hours: `${String(form.getFieldValue(`time${index}.startHour`)).padStart(2, "0")}:${String(form.getFieldValue(`time${index}.startMinute`)).padStart(2, "0")}`,
+      hours: `${String(form.getFieldValue(`time${index}.startHour`)  || '00').padStart(2, "0")}:${String(form.getFieldValue(`time${index}.startMinute`) || '00').padStart(2, "0")}`,
     };
   });
   try {
@@ -182,7 +182,7 @@ onSave()
                   </Form.Item>
                 </Col>
                 <Col className="mb-0" span={10}>
-                  <Form.Item     labelCol={{ span: 24 }}
+                  <Form.Item   initialValue={0}   labelCol={{ span: 24 }}
                   wrapperCol={{ span: 24 }} label="Heures" className="flex items-center mb-2"
                    >
                     <Form.Item
@@ -196,7 +196,7 @@ onSave()
                       />
                     </Form.Item>
                     <span className="mx-1">:</span>
-                    <Form.Item name={`time${index}.startMinute`} noStyle>
+                    <Form.Item  initialValue={0} name={`time${index}.startMinute`} noStyle>
                       <InputNumber
                         min={0}
                         max={59}

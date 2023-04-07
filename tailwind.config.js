@@ -9,6 +9,10 @@ module.exports = {
       textColor: {
         'fad4d8': '#FAD4D8',
       },
+      width: {
+        'planning' : '500px',
+        'settings' : '900px'
+      }
     },
   },
   content: [

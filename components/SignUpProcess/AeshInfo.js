@@ -62,7 +62,7 @@ function AeshInfo({ prevStep, nextStep }) {
         hours: `${String(form.getFieldValue(`time${index}.startHour`)).padStart(
           2,
           "0"
-        )}:${String(form.getFieldValue(`time${index}.startMinute`)).padStart(
+        )}:${String(form.getFieldValue(`time${index}.startMinute`) || '00').padStart(
           2,
           "0"
         )}`,
@@ -134,7 +134,7 @@ function AeshInfo({ prevStep, nextStep }) {
                     </Form.Item>
                     <span className="mx-1">:</span>
                     <Form.Item name={`time${index}.startMinute`} noStyle>
-                      <InputNumber min={0} max={59} step={5} placeholder="MM" />
+                      <InputNumber min={0} max={59} step={5} defaultValue={0} placeholder="MM" />
                     </Form.Item>
                   </Form.Item>
                 </Col>

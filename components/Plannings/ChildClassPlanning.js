@@ -1,26 +1,20 @@
-import React, { useState, useEffect } from "react";
-import { Row, Col, Input, Select, Form, InputNumber, } from "antd";
+import { Col, Form, Input, InputNumber, Row, Select } from "antd";
 import {
   collection,
-  query,
-  where,
-  getDocs,
-  writeBatch,
   doc,
-  deleteDoc,
-  updateDoc, 
+  getDocs,
+  query,
+  updateDoc,
+  where,
+  writeBatch,
 } from "firebase/firestore";
-import { ExclamationCircleOutlined } from '@ant-design/icons';
-
-
+import React, { useEffect, useState } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
-import { auth, db } from "../../firebaseConfig";
 import { AiOutlineEdit, AiOutlineSave } from "react-icons/ai";
+import { auth, db } from "../../firebaseConfig";
 import { subtractTime } from "../../modules/time";
-
 const { Option } = Select;
-
-function ChildPlanning({
+function ChildClassPlanning({
   firstName,
   level,
   teacher,
@@ -34,7 +28,7 @@ function ChildPlanning({
   const [form] = Form.useForm();
   const [planningActual, setPlanningActual] = useState({});
   const [levelsData, setLevelsData] = useState([]);
-  const [aeshList, setAeshList] = useState([]);
+   const [aeshList, setAeshList] = useState([]);
   const [user, loading, error] = useAuthState(auth);
   const [isEditing, setIsEditing] = useState(false);
   const [levelSelected, setLevelSelected] = useState(level);
@@ -43,31 +37,24 @@ function ChildPlanning({
   const [startHours, startMinutes] = hours
     .split(":")
     .map((value) => parseInt(value, 10));
-    const [childData, setChildData] = useState({
-      firstName,
-      level,
-      teacher,
-      hours,
-      hoursReels,
-      planning,
-    })
-
+  const [childData, setChildData] = useState({
+    firstName,
+    level,
+    teacher,
+    hours,
+    hoursReels,
+    planning,
+  });
   useEffect(() => {
     setPlanningActual(planning);
-    setChildData({firstName,
-      level,
-      teacher,
-      hours,
-      hoursReels,
-      planning,})
+    setChildData({ firstName, level, teacher, hours, hoursReels, planning });
   }, [planning]);
 
-  const fetchLevelsData = async () => {
+ const fetchLevelsData = async () => {
     const schoolDoc = await getSchoolDoc();
     setLevelsData(schoolDoc.data().levelsData);
   };
   
-
 
   const fetchAeshList = async () => {
     const aeshRef = collection(db, `schools/${schoolId}/aesh`);
@@ -79,9 +66,6 @@ function ChildPlanning({
     console.log(fetchedAeshList);
     setAeshList(fetchedAeshList);
   };
-
-
-
   useEffect(() => {
     if (levelSelected !== "" && levelsData) {
       const level = levelsData.find(levelData => levelData.name === levelSelected);
@@ -102,14 +86,12 @@ function ChildPlanning({
     setLevelSelected(value);
   };
   const handleButtonClick = async () => {
-    if (isEditing) {      
+    if (isEditing) {
       await onFinish();
-    }
-    else {
+    } else {
       form.setFieldsValue({ teacher: childData.teacher })
       setIsEditing(!isEditing);
     }
-
   };
   const deleteOldPlanning = async (childID) => {
     const cellPlanningsRef = collection(db, `schools/${schoolId}/cellPlanning`);
@@ -189,53 +171,49 @@ function ChildPlanning({
       const childRef = doc(db, `schools/${schoolId}/children`, childID);
       await updateDoc(childRef, updatedChildData);
       setChildData(updatedChildData);
-      
     } catch (error) {
       console.error("Failed to update child: ", error);
     }
   };
 
   const onFinish = async () => {
-    try{
-    await form.validateFields();
-    }
-    catch (error) {
-      return
+    try {
+      await form.validateFields();
+    } catch (error) {
+      return;
       console.error("Failed to get form values: ", error);
     }
-   
+
     try {
       const formValues = await form.validateFields();
-      console.log("formulaire", formValues )
+      console.log("formulaire", formValues);
       const result = {};
       const nameChild = formValues.firstName;
-  
+
       // Process form values
       for (const key in formValues) {
         if (formValues.hasOwnProperty(key)) {
           const [weekday, timeslot] = key.split("_");
           const valueObj = formValues[key];
-  
+
           if (valueObj?.value && valueObj?.label) {
             const { value: idAesh, label: nameAesh } = valueObj;
             if (!result[weekday]) result[weekday] = {};
             result[weekday][timeslot] = { idAesh, nameAesh };
           }
         }
-      }  
-      console.log(result)
+      }
+      console.log(result);
       await updateDatabase(result, nameChild);
       await updateChild(childID, {
         firstName: formValues.firstName,
         level: formValues.level,
         teacher: formValues.teacher,
-        hours: `${formValues.startHours}:${String(formValues.startMinutes).padStart(2, '0')}`
-
+        hours: `${formValues.startHours}:${String(
+          formValues.startMinutes
+        ).padStart(2, "0")}`,
       });
 
-
-
-  
       // Clear old values
       weekDays.forEach((weekday) => {
         timeSlots.forEach((timeslot) => {
@@ -244,7 +222,7 @@ function ChildPlanning({
           }
         });
       });
-  
+
       // Update the form values
       for (const weekday in result) {
         for (const timeslot in result[weekday]) {
@@ -256,25 +234,23 @@ function ChildPlanning({
           });
         }
       }
-      onSave()
+      onSave();
       setPlanningActual(result);
       setIsEditing(false);
     } catch (error) {
       console.error("Failed to get form values: ", error);
     }
   };
-  
+
   const getSchoolDoc = async () => {
     const q = query(collection(db, "schools"), where("userId", "==", user.uid));
     const querySnapshot = await getDocs(q);
     return querySnapshot.docs[0];
   };
-  
+
   const timeSlots = ["Matin 1", "Matin 2", "Après-midi 1", "Après-midi 2"];
   const weekDays = ["Lundi", "Mardi", "Jeudi", "Vendredi"];
-  
 
-  
   useEffect(() => {
     weekDays.forEach((weekday) => {
       timeSlots.forEach((timeslot) => {
@@ -288,36 +264,132 @@ function ChildPlanning({
     });
   }, [planningActual]);
 
-  
-
   return (
     <>
-      <div className="absolute top-5 rounded p-1 text-gray-500 hover:text-black hover:bg-gray-200  right-9">
-        {isEditing ? (
-          <AiOutlineSave
-            onClick={handleButtonClick}
-            className="text-xl cursor-pointer"
-          />
-        ) : (
-          <AiOutlineEdit
-            onClick={handleButtonClick}
-            className="text-xl cursor-pointer"
-          />
-        )}
+    <Form
+    onFinish={onFinish}
+    initialValues={{
+      level: levelSelected,
+      teacher: teacherSelected,
+      startHours,
+      startMinutes,
+    }}
+    layout="vertical"
+    form={form}
+    className="w-planning m-1  backdrop-blur-md border rounded shadow"
+
+  >
+  <Row className="p-1 mb-2 rounded bg-slate-100 text-l font-semibold">
+  <Col span={5}>
+    <div className=" p-1 flex flex-col items-center justify-between">
+      <span>Prénom : </span>
+      {isEditing ? (
+        <Form.Item
+          initialValue={childData.firstName}
+          className="mb-0"
+          name="firstName"
+          rules={[{ required: true, message: "Champ obligatoire" }]}
+        >
+          <Input />
+        </Form.Item>
+      ) : (
+        <span>{childData.firstName}</span>
+      )}
+    </div>
+  </Col>
+  <Col span={3}>
+    <div className=" p-1 flex flex-col items-center justify-between">
+    <span>Classe : </span>
+          {isEditing ? (
+            <Form.Item
+              rules={[{ required: true, message: "Champ obligatoire" }]}
+              className="mb-0" name="level">
+              <Select value={levelSelected} onChange={handleLevelChange}>
+                {levelsData.map(level => (
+                  <Option key={level.name} value={level.name}>{level.name}</Option>
+                ))}
+              </Select>
+            </Form.Item>
+          ) : (
+            <span>{childData.level}</span>
+          )}
+    </div>
+  </Col>
+  <Col span={4}>
+    <div className=" p-1 flex flex-col items-center justify-between">
+    <span>Prof : </span>
+          {isEditing ? (
+            <Form.Item
+            defaultValue={childData.teacher}
+              rules={[{ required: true, message: "Champ obligatoire" }]}
+              className="mb-0 ml-3" name="teacher">
+              <Select
+                value={teacherSelected}
+                style={{ width: "80px" }}
+                dropdownMatchSelectWidth={false}
+                onChange={(value) => setTeacherSelected(value)}
+              >
+                {teacherList.map(teacher => (
+                  <Option key={teacher} value={teacher}>{teacher}</Option>
+                ))}
+              </Select>
+            </Form.Item>
+          ) : (
+            <span>{childData.teacher}</span>
+          )}
+    </div>
+  </Col>
+  <Col span={5}>
+    <div className="  p-1 flex flex-col items-center justify-between">
+      <span>H. acc. :</span>
+      {isEditing ? (
+        <>
+          <div className="mb-0 flex flex-row items-center ">
+            <Form.Item  className="mb-0" name="startHours">
+              <InputNumber style={{ width: "40px" }} min={0} max={59} placeholder="HH" />
+            </Form.Item>
+            <Form.Item className="mb-0" name="startMinutes">
+              <InputNumber style={{ width: "40px" }} min={0} max={45} step={15} placeholder="MM" />
+            </Form.Item>
+          </div>
+        </>
+      ) : (
+        <>         
+          <span>{childData.hours}</span>
+        </>
+      )}
+    </div>
+  </Col>
+  <Col span={3}>
+    <div className=" h-full p-1 flex flex-col items-center ">
+      <span>H. Rée: </span>
+      <span>{childData.hoursReels}</span>
+    </div>
+  </Col>
+  <Col span={3}>
+    <div className=" h-full p-1 flex flex-col items-center ">
+      <span>Diff. : </span>
+      <span>{subtractTime(hoursReels, hours)}</span>
       </div>
-      <Form
-        onFinish={onFinish}
-        initialValues={{
-          level: levelSelected,
-          teacher: childData.teacher,
-          startHours,
-          startMinutes,
-        }}
-        layout="vertical"
-        className="w-full flex p-3"
-        form={form}
-      >
-        <div className="w-3/4 h-full flex-shrink-0 border bg-gray-100 backdrop-blur-md rounded shadow-md  text-l font-semibold">
+      
+        </Col>
+        <Col span={1}>
+          <div className=" h-full p-1 flex flex-col items-center justify-center text-gray-500 hover:text-black hover:bg-gray-200 ">
+            {isEditing ? (
+              <AiOutlineSave
+                onClick={handleButtonClick}
+                className="text-2xl cursor-pointer"
+              />
+            ) : (
+              <AiOutlineEdit
+                onClick={handleButtonClick}
+                className="text-2xl cursor-pointer"
+              />
+            )}
+          </div>
+        </Col>
+      </Row>
+        <div className=" h-full flex-shrink-0   text-l font-semibold">
           <Row>
             <Col span={4}></Col>
             {weekDays.map((day) => (
@@ -329,7 +401,10 @@ function ChildPlanning({
           {timeSlots.map((timeSlot) => (
             <Row key={timeSlot}>
               <Col className="border p-1" span={4}>
-                {timeSlot}
+              {timeSlot === "Matin 1" ? "Matin 1" :
+              timeSlot === "Matin 2" ? "Matin 2" :
+              timeSlot === "Après-midi 1" ? "A-Midi 1" :
+              timeSlot === "Après-midi 2" ? "A-Midi 2" : ""}
               </Col>
               {weekDays.map((day) => (
                 <Col key={day} span={5} className="p-1 border">
@@ -349,9 +424,11 @@ function ChildPlanning({
                         value={
                           planningActual[day]?.[timeSlot]
                             ? {
-                                value: planningActual[day]?.[timeSlot]?.idAesh || "",
+                                value:
+                                  planningActual[day]?.[timeSlot]?.idAesh || "",
                                 label:
-                                planningActual[day]?.[timeSlot]?.nameAesh || "",
+                                  planningActual[day]?.[timeSlot]?.nameAesh ||
+                                  "",
                               }
                             : undefined
                         }
@@ -387,99 +464,10 @@ function ChildPlanning({
               ))}
             </Row>
           ))}
-        </div>
-
-        <div className="w-1/4 mx-2 bg-gray-100 backdrop-blur-md rounded shadow-md text-l font-semibold flex flex-col">
-          <div className="border p-1 flex flex-row justify-between">
-            <span>Prénom : </span>
-            {isEditing ? (
-              <Form.Item
-                initialValue={childData.firstName}
-                className="mb-0 w-1/2"
-                name="firstName"
-                rules={[{ required: true, message: "Champ obligatoire" }]}
-
-              >
-                <Input />
-              </Form.Item>
-            ) : (
-              <span>{childData.firstName}</span>
-            )}
-          </div>
-          <div className="border p-1 flex flex-row justify-between">
-          <span>Classe : </span>
-          {isEditing ? (
-            <Form.Item
-              rules={[{ required: true, message: "Champ obligatoire" }]}
-              className="mb-0" name="level">
-              <Select value={levelSelected} onChange={handleLevelChange}>
-                {levelsData.map(level => (
-                  <Option key={level.name} value={level.name}>{level.name}</Option>
-                ))}
-              </Select>
-            </Form.Item>
-          ) : (
-            <span>{childData.level}</span>
-          )}
-        </div>
-        <div className="border p-1 flex flex-row justify-between">
-          <span>Prof : </span>
-          {isEditing ? (
-            <Form.Item
-            defaultValue={childData.teacher}
-              rules={[{ required: true, message: "Champ obligatoire" }]}
-              className="mb-0 " name="teacher">
-              <Select
-                value={teacherSelected}
-                style={{ width: "100px" }}
-                dropdownMatchSelectWidth={false}
-                onChange={(value) => setTeacherSelected(value)}
-              >
-                {teacherList.map(teacher => (
-                  <Option key={teacher} value={teacher}>{teacher}</Option>
-                ))}
-              </Select>
-            </Form.Item>
-          ) : (
-            <span>{childData.teacher}</span>
-          )}
-        </div>
-
-
-          {isEditing ? (
-            <>
-              <span>Heures accordées :</span>
-              <div className="mb-0 flex flex-row">
-                <Form.Item className="mb-0" name="startHours">
-                  <InputNumber min={0} max={59} placeholder="HH" />
-                </Form.Item>
-                <Form.Item className="mb-0" name="startMinutes">
-                  <InputNumber min={0} max={45} step={15} placeholder="MM" />
-                </Form.Item>
-              </div>
-            </>
-          ) : (
-            <div className="border p-1 flex flex-row justify-between">
-              
-              <span>Heures accordées : </span>
-              <span>{childData.hours}</span>
-            </div>
-          )}
-
-          <div className="border p-1 flex flex-row justify-between">
-            
-            <span>Heures Réelles : </span>
-            <span>{childData.hoursReels}</span>
-          </div>
-
-          <div className="border p-1 flex flex-row justify-between">
-            <span>Différence : </span>
-            <span>{subtractTime(hoursReels,hours)}</span>
-          </div>
-        </div>
+        </div>        
       </Form>
     </>
   );
 }
 
-export default ChildPlanning;
+export default ChildClassPlanning;

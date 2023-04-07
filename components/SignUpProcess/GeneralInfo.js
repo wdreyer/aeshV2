@@ -58,7 +58,7 @@ function GeneralInfo ({ saveData, nextStep }) {
   const handleSubmit = async (values) => {
     try {
       const timeObj = {};
-      const levelsData = {};
+      const levelsData = [];
       const labels = ["Matin 1", "Matin 2", "Après-midi 1", "Après-midi 2"];
 
       const userCredential = await createUserWithEmailAndPassword(auth, form.getFieldValue('email'), password);
@@ -89,7 +89,7 @@ function GeneralInfo ({ saveData, nextStep }) {
             }
           }
       
-          levelsData[levelName] = teachers;
+          levelsData.push({ name: levelName, teachers });
         }
       }
 
@@ -312,6 +312,7 @@ function GeneralInfo ({ saveData, nextStep }) {
                     key={classIndex}
                     label={`${level.name || `Niveau ${levelIndex + 1}`} ${classIndex + 1}`}
                     name={`level${levelIndex}class${classIndex}`}
+                    
                   >
                     <Input
                       placeholder="Prénom du/de la Professeur.e"

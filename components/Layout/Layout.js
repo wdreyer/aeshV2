@@ -3,7 +3,7 @@ import LeftMenu from "./LeftMenu";
 
 function Layout({ children }) {
   return (
-    <div className=" mx-auto h-screen flex flex-col">
+    <div className=" mx-auto min-h-screen flex flex-col">
       <Header />
       <div className="flex flex-grow min-h-0">
         <LeftMenu />

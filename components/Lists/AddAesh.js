@@ -57,10 +57,10 @@ function AddAesh({onSave}) {
     const aeshData = aeshForms.map((aesh, index) => {
       return {
         firstName: aesh.firstName,
-        hours: `${String(form.getFieldValue(`time${index}.startHour`)).padStart(
+        hours: `${String(form.getFieldValue(`time${index}.startHour`) || '00' ).padStart(
           2,
           "0"
-        )}:${String(form.getFieldValue(`time${index}.startMinute`)).padStart(
+        )}:${String(form.getFieldValue(`time${index}.startMinute`) || '00').padStart(
           2,
           "0"
         )}`,
@@ -125,13 +125,14 @@ function AddAesh({onSave}) {
                   >
                     <Form.Item
                       className="mb-2"
+                      initialValue={0}
                       name={`time${index}.startHour`}
                       noStyle
                     >
                       <InputNumber min={0} max={23} placeholder="HH" />
                     </Form.Item>
                     <span className="mx-1">:</span>
-                    <Form.Item name={`time${index}.startMinute`} noStyle>
+                    <Form.Item  initialValue={0} name={`time${index}.startMinute`} noStyle>
                       <InputNumber min={0} max={59} step={5} placeholder="MM" />
                     </Form.Item>
                   </Form.Item>
