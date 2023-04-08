@@ -56,6 +56,7 @@ function GeneralInfo ({ saveData, nextStep }) {
 
 
   const handleSubmit = async (values) => {
+    console.log("values before", values)
     try {
       const timeObj = {};
       const levelsData = [];
@@ -331,13 +332,6 @@ function GeneralInfo ({ saveData, nextStep }) {
             
               
             </div>
-
-            <button
-              className="  hover:text-black text-sm  text-gray-700  pt-4  focus:outline-none focus:shadow-outline"
-              type="submit"
-            >
-              Enregistrer et reprendre plus tard
-            </button>
             <button
               className="drop-shadow-md bg-[#FAD4D8]  hover:text-black hover:bg-[#FAD4E8] text-gray-700 font-bold pt-2 py-2 px-4 rounded focus:outline-none focus:shadow-outline"
               type="submit"
