@@ -288,17 +288,17 @@ const selectAllLevels = () => {
       <div className="w-auto border mb-2 p-1 flex flex-col items-center justify-between">
         Tri par classe :
       </div>
-      <div className="my-4 text-center">
+      <div className="my-3 text-center">
       <Checkbox.Group
-        className="mx-2"
+        className="w-auto border mb-1 p-1 flex flex-row items-center flex-wrap justify-center"
         onChange={(checkedValues) => setSelectedLevels(checkedValues)}
         value={selectedLevels}
       >
         {levelCheckboxes}
       </Checkbox.Group>
-      <br />
+
       <Checkbox.Group
-      className="mx-2"
+      className="w-auto border mt-1 mb-2 p-1 flex flex-row items-center flex-wrap justify-center"
       onChange={(checkedValues) => setSelectedTeachers(checkedValues)}
       value={selectedTeachers}
     >

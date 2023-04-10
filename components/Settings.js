@@ -6,8 +6,8 @@ import {
   getDoc,
   getDocs,
   query,
-  where,
-  updateDoc
+  updateDoc,
+  where
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { db } from "../firebaseConfig";
@@ -25,6 +25,7 @@ function Settings() {
   const [errorMessage, setErrorMessage] = useState("");
   const [schedules, setSchedules] = useState([]);
   const [levelsData, setLevelsData] = useState([]);
+  const [message, setMessage] = useState('')
 
   const handleLevelCount = (value) => {
     setLevelCount(value);
@@ -39,17 +40,27 @@ function Settings() {
       return newLevelsData;
     });
   };
+
+  
   const handleClassCount = (levelIndex, value) => {
     setLevelsData((prevLevelsData) => {
       const newLevelsData = [...prevLevelsData];
+      const existingTeachers = newLevelsData[levelIndex].teachers;
+      const newTeachers = existingTeachers.slice(0, value);
+  
+      while (newTeachers.length < value) {
+        newTeachers.push("");
+      }
+  
       newLevelsData[levelIndex] = {
         ...newLevelsData[levelIndex],
-        teachers: Array(value).fill(""),
+        teachers: newTeachers,
       };
+  
+      updateLevels();
       return newLevelsData;
     });
   };
-
   const handleLevelName = (levelIndex, value) => {
     setLevelsData((prevLevelsData) => {
       const newLevelsData = [...prevLevelsData];
@@ -57,6 +68,7 @@ function Settings() {
       return newLevelsData;
     });
   };
+
   const handleTeacherName = (levelIndex, teacherIndex, value) => {
     setLevelsData((prevLevelsData) => {
       const newLevelsData = [...prevLevelsData];
@@ -79,14 +91,20 @@ function Settings() {
     fetchSchoolData();
   }, []);
 
+ 
+
+  useEffect(() => {
+    updateLevels();
+  }, [levelsData]);
+
   const fetchSchoolData = async () => {
-    console.log("lafonction");
     const user = auth.currentUser;
     if (user) {
       setUserId(user.uid);
       const schoolDoc = await getSchoolDoc(user.uid);
       if (schoolDoc) {
         const data = schoolDoc.data();
+        console.log("ladatadelecole",data)
         setSchoolId(schoolDoc.id);
         setLevelsData(data.levelsData.map((level) => ({ ...level })));
         form.setFieldsValue({
@@ -97,7 +115,6 @@ function Settings() {
     }
   };
 
-  console.log(levelsData);
 
   const getSchedules = async (schoolId) => {
     const schoolRef = doc(db, "schools", schoolId);
@@ -170,7 +187,6 @@ function Settings() {
   const fetchSchedules = async () => {
     const fetchedSchedules = await getSchedules(schoolId);
     console.log("Fetched schedules:", fetchedSchedules);
-
     form.setFieldsValue({
       "Matin0.Start.hour": fetchedSchedules["Matin0.StartHour"],
     });
@@ -227,10 +243,13 @@ function Settings() {
       "Après-midi1.End.minute": fetchedSchedules["Après-midi1.EndMinute"],
     });
   };
+  form.setFieldsValue({
+    "Levels": levelsData.length
+  });
 
-  useEffect(() => {
-    console.log("Form values:", form.getFieldsValue());
-  }, [schedules]);
+
+
+
 
   const getSchoolDoc = async (userId) => {
     const q = query(collection(db, "schools"), where("userId", "==", userId));
@@ -238,72 +257,87 @@ function Settings() {
     return querySnapshot.docs[0];
   };
 
-  const handleSubmit = async (values) => {
-    console.log(values);
+const updateLevels = () => {
+  for (let levelIndex = 0; levelIndex < levelsData.length; levelIndex++) {
+    const level = levelsData[levelIndex];
   
-    try {
-      const labels = ["Matin 1", "Matin 2", "Après-midi 1", "Après-midi 2"];
+    // Définir la valeur du champ pour le nom du niveau
+    form.setFieldsValue({
+      [`level${levelIndex}name`]: level.name
+    });
   
-      // Vérifiez que l'utilisateur est connecté et obtenez son ID utilisateur.
-      const userId = auth.currentUser.uid;
+    // Parcourir les enseignants
+    for (let teacherIndex = 0; teacherIndex < level.teachers.length; teacherIndex++) {
+      const teacher = level.teachers[teacherIndex];
   
-      // Récupérez le schoolId pour cet utilisateur
-      const userDoc = await getDoc(doc(db, "users", userId));
-      const schoolId = userDoc.data().schoolId;
-  
-      // Récupérez les données actuelles de l'école
-      const schoolDoc = await getDoc(doc(db, "schools", schoolId));
-      const schoolData = schoolDoc.data();
-  
-      // Mettez à jour les horaires
-      labels.forEach((label, index) => {
-        const startHour = values[`${label}.Start.hour`] || form.getFieldValue(`${label}.Start.hour`);
-        const startMinute = values[`${label}.Start.minute`] || form.getFieldValue(`${label}.Start.minute`);
-        const endHour = values[`${label}.End.hour`] || form.getFieldValue(`${label}.End.hour`);
-        const endMinute = values[`${label}.End.minute`] || form.getFieldValue(`${label}.End.minute`);
-  
-        if (startHour !== undefined && startMinute !== undefined) {
-          schoolData.timeObj[`${label}.Start`] = `${startHour}:${startMinute}`;
-        }
-        if (endHour !== undefined && endMinute !== undefined) {
-          schoolData.timeObj[`${label}.End`] = `${endHour}:${endMinute}`;
-        }
+      // Définir la valeur du champ pour le nom de l'enseignant
+      form.setFieldsValue({
+        [`${levelIndex}${teacherIndex}`]: teacher
       });
-  
-      // Mettez à jour les niveaux et les enseignants
-      for (const key in values) {
-        if (key.startsWith("level") && key.endsWith("name")) {
-          const levelName = values[key] || form.getFieldValue(key);
-          const levelIndex = key.match(/\d+/)[0];
-          const teachers = [];
-  
-          for (const teacherKey in values) {
-            if (teacherKey.startsWith(`level${levelIndex}class`)) {
-              const teacherName = values[teacherKey] || form.getFieldValue(teacherKey);
-              if (teacherName !== undefined) {
-                teachers.push(teacherName);
-              }
-            }
-          }
-  
-          if (levelName !== undefined) {
-            schoolData.levelsData[levelIndex] = { name: levelName, teachers };
-          }
-        }
-      }
-  
-      // Mettez à jour le nom de l'école si nécessaire
-      if (values.schoolName !== undefined) {
-        schoolData.schoolName = values.schoolName;
-      }
+    }
+      form.setFieldsValue({
+      [`Nombre de classes ${level.name || `Niveau ${levelIndex + 1}`}`]: level.teachers.length
+    });
+  }
 
-      console.log(schoolData)
-  
-      // Mettez à jour les informations de l'école
-      // await updateDoc(doc(db, "schools", schoolId), schoolData);
-  
+  form.setFieldsValue({
+    "Levels": levelsData.length
+  });
+
+}
+
+function formatData(data) {
+  const formattedData = {
+    userId: userId, // Ici, vous pouvez remplacer la valeur fixe par une fonction ou une variable qui génère un userId unique
+    schoolName: data.schoolName,
+    timeObj: {
+      "Après-midi 2.Start": `${String(data["Après-midi1.Start.hour"]).padStart(2, '0')}:${String(data["Après-midi1.Start.minute"]).padStart(2, '0')}`,
+      "Matin 2.Start": `${String(data["Matin1.Start.hour"]).padStart(2, '0')}:${String(data["Matin1.Start.minute"]).padStart(2, '0')}`,
+      "Après-midi 2.End": `${String(data["Après-midi1.End.hour"]).padStart(2, '0')}:${String(data["Après-midi1.End.minute"]).padStart(2, '0')}`,
+      "Après-midi 1.End": `${String(data["Après-midi0.End.hour"]).padStart(2, '0')}:${String(data["Après-midi0.End.minute"]).padStart(2, '0')}`,
+      "Après-midi 1.Start": `${String(data["Après-midi0.Start.hour"]).padStart(2, '0')}:${String(data["Après-midi0.Start.minute"]).padStart(2, '0')}`,
+      "Matin 1.Start": `${String(data["Matin0.Start.hour"]).padStart(2, '0')}:${String(data["Matin0.Start.minute"]).padStart(2, '0')}`,
+      "Matin 2.End": `${String(data["Matin1.End.hour"]).padStart(2, '0')}:${String(data["Matin1.End.minute"]).padStart(2, '0')}`,
+      "Matin 1.End": `${String(data["Matin0.End.hour"]).padStart(2, '0')}:${String(data["Matin0.End.minute"]).padStart(2, '0')}`,
+    },
+    
+    levelsData: [],
+  };
+
+  for (let i = 0; i < data.Levels; i++) {
+    const levelName = data[`level${i}name`];
+    const teacherCount = data[`Nombre de classes ${levelName}`];
+    const teachers = [];
+
+    for (let j = 0; j < teacherCount; j++) {
+      const teacherName = data[`${i}${j}`];
+      if (teacherName.trim() !== "") {
+        teachers.push(teacherName);
+      }
+    }
+
+    formattedData.levelsData.push({
+      name: levelName,
+      teachers: teachers,
+    });
+  }
+  return formattedData;
+}
+
+  const handleSubmit = async (values) => {
+    const schoolData = formatData(values);
+
+    console.log("maj", schoolData);
+
+    try {
+      await updateDoc(doc(db, "schools", schoolId), schoolData);
+      setMessage("La mise à jour a bien été effectuée")
     } catch (error) {
-      console.error('Erreur lors de la mise à jour des informations :', error.message);
+      setMessage("Erreur lors de la mise à jour des informations :")
+      console.error(
+        "Erreur lors de la mise à jour des informations :",
+        error.message
+      );
     }
   };
 
@@ -413,12 +447,12 @@ function Settings() {
               return (
                 <>
                   {levelIndex === 0 && (
-                    <Form.Item label="Nombre de niveaux">
+                    <Form.Item name="Levels" label="Nombre de niveaux">
                       <InputNumber
-                        min={1}
+                        min={0}
                         max={10}
                         onChange={(value) => handleLevelCount(value)}
-                        defaultValue={Object.keys(levelsData).length}
+                        
                       />
                     </Form.Item>
                   )}
@@ -435,27 +469,28 @@ function Settings() {
                         onChange={(e) =>
                           handleLevelName(levelIndex, e.target.value)
                         }
-                        defaultValue={levelName}
                       />
                     </Form.Item>
                     <Form.Item
+                    name={`Nombre de classes ${level.name || `Niveau ${levelIndex + 1}`}`}
+                    
                       label={`Nombre de classes ${
                         levelName || `Niveau ${levelIndex + 1}`
                       }`}
                     >
                       <InputNumber
-                        min={1}
+                        min={0}
                         max={10}
                         onChange={(value) =>
                           handleClassCount(levelIndex, value)
                         }
-                        defaultValue={teachers.length}
                       />
                     </Form.Item>
                     <div className="bg-gray-100 p-4 rounded-lg">
                       {teachers.map((teacher, teacherIndex) => (
                         <Form.Item
                           key={teacherIndex}
+                          name={`${levelIndex}${teacherIndex}`}
                           label={`${levelName || `Niveau ${levelIndex + 1}`} ${
                             teacherIndex + 1
                           }`}
@@ -469,7 +504,6 @@ function Settings() {
                                 e.target.value
                               )
                             }
-                            defaultValue={teacher}
                           />
                         </Form.Item>
                       ))}
@@ -479,7 +513,8 @@ function Settings() {
               );
             })}
           </div>
-          <div className="w-full justify-between">
+          <span className="text-green-800 ">{message}</span>
+          <div className="mt-2 w-full justify-between">         
             <Space>
               <Button htmlType="submit">Sauvegarder les modifications</Button>
             </Space>

@@ -25,6 +25,7 @@ function ChildClassPlanning({
   planning,
   onSave,
 }) {
+
   const [form] = Form.useForm();
   const [planningActual, setPlanningActual] = useState({});
   const [levelsData, setLevelsData] = useState([]);
@@ -470,4 +471,4 @@ function ChildClassPlanning({
   );
 }
 
-export default ChildClassPlanning;
+export default React.memo(ChildClassPlanning);

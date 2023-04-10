@@ -16,7 +16,6 @@ function childrenPage() {
   const [schoolRates, setSchoolRates] = useState({})
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-
   const showModal = async () => {
     setIsModalOpen(true);
   }; 
@@ -59,18 +58,12 @@ function childrenPage() {
           const docRef = doc(db,`/schools/${schoolId}/children/${childID}`)
           await updateDoc (
             docRef, {hoursReels:hoursReels}
-          )      
-        
-          
-     
+          )            
         return {
           childID,
           hoursReels : hoursReels,         
           planning: fetchedPlann
-        };   
-       
-
-
+        };         
 
       } catch (error) {
         console.error("Error fetching planning data:", error);

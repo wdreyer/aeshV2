@@ -129,7 +129,7 @@ function AddAesh({onSave}) {
                       name={`time${index}.startHour`}
                       noStyle
                     >
-                      <InputNumber min={0} max={23} placeholder="HH" />
+                      <InputNumber min={0} max={50} placeholder="HH" />
                     </Form.Item>
                     <span className="mx-1">:</span>
                     <Form.Item  initialValue={0} name={`time${index}.startMinute`} noStyle>
