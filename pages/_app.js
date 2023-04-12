@@ -7,6 +7,7 @@ import { useAuthState } from "react-firebase-hooks/auth";
 import Login from "../components/Login";
 import InscriptionForm from "../components/SignUpProcess/InscriptionForm";
 import { useRouter } from "next/router";
+import { BeatLoader } from 'react-spinners';
 
 React.useLayoutEffect = React.useEffect;
 
@@ -18,7 +19,9 @@ function App({ Component, pageProps }) {
 
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <div className="flex justify-center items-center min-h-screen">
+    <BeatLoader color="#B8336A" size={15} margin={2} />
+  </div>;
   }
 
   if (error) {

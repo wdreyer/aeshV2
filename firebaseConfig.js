@@ -3,7 +3,7 @@ import 'firebase/auth';
 import 'firebase/database';
 
 import { initializeApp } from 'firebase/app';
-import { getFirestore, connectFirestoreEmulator } from "firebase/firestore";
+import { getFirestore,enableIndexedDbPersistence, connectFirestoreEmulator } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
 import { getFunctions, connectFunctionsEmulator } from 'firebase/functions';
 
@@ -17,7 +17,10 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
+
 const db = getFirestore(app);
+
+
 const auth = getAuth(app);
 
 // Initialize Cloud Functions

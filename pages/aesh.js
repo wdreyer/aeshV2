@@ -8,6 +8,8 @@ import { auth, db } from "../firebaseConfig";
 import {subtractTime} from '../modules/time'
 import { calculHours } from "../modules/calculHours";
 import AddAesh from "../components/Lists/AddAesh";
+import { BeatLoader } from 'react-spinners';
+
 
 
 function aeshPage() {
@@ -16,6 +18,8 @@ function aeshPage() {
   const [schoolId, setSchoolId] = useState(null);
   const [schoolRates, setSchoolRates] = useState({})
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+
 
   const showModal = async () => {
     setIsModalOpen(true);
@@ -100,12 +104,13 @@ function aeshPage() {
       });
      
       setAeshData(updatedAeshData);
+      setIsLoading(false);
     }
   };
 
     useEffect(() => {
     fetchAesh();
-  }, [user, loading]);
+  }, []);
 
   const getSchoolTimeObj = async () => {
     const schoolDoc = await getSchoolDoc();
@@ -154,7 +159,13 @@ function aeshPage() {
       <Col span={5}><div className="flex items-center border-r pl-2"><strong>Différence</strong></div></Col>
       <Col span={5}  className=" pl-2"><strong>Planning et Options</strong></Col>
     </Row>
-    {aesh}
+    {isLoading ? (
+      <div className="flex justify-center items-center min-h-screen">
+        <BeatLoader color="#B8336A" size={15} margin={2} />
+      </div>
+    ) : (
+      aesh
+    )}  
   </div>
   <div className="flex flex-row justify-center" >
   <Button  onClick={showModal}>Ajouter un ou plusieurs Aesh</Button>

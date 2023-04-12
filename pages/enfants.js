@@ -1,4 +1,4 @@
-import { Button, Modal, Col, Row } from "antd";
+import { Button, Modal, Col, Row, Table } from "antd";
 import { collection, getDocs, query, updateDoc, where, doc } from "firebase/firestore";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
@@ -8,6 +8,8 @@ import { auth, db } from "../firebaseConfig";
 import {subtractTime} from '../modules/time'
 import { calculHours } from "../modules/calculHours";
 import AddChild from "../components/Lists/AddChild";
+import { BeatLoader } from 'react-spinners';
+
 
 function childrenPage() {
   const [user, loading, error] = useAuthState(auth);
@@ -15,6 +17,8 @@ function childrenPage() {
   const [schoolId, setSchoolId] = useState(null);
   const [schoolRates, setSchoolRates] = useState({})
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+
 
   const showModal = async () => {
     setIsModalOpen(true);
@@ -76,6 +80,7 @@ function childrenPage() {
   };
 
   const fetchChildren = async () => {
+    
     if (!loading && user) {
       const schoolDoc = await getSchoolDoc();
       const schoolTime = await getSchoolTimeObj();
@@ -95,14 +100,14 @@ function childrenPage() {
           hoursReels: planningData ? planningData.hoursReels : '00:00',
         };
       });
-     
+      setIsLoading(false);
       setChildrenData(updatedChildrenData);
     }
   };
 
     useEffect(() => {
     fetchChildren();
-  }, [user, loading]);
+  }, []);
 
   const getSchoolTimeObj = async () => {
     const schoolDoc = await getSchoolDoc();
@@ -145,15 +150,21 @@ function childrenPage() {
     <>
     <div className=" border rounded mb-2 text-lg font-semibold">
     <Row className=" p-2 shadow-md  text-lg font-bold">
-      <Col span={4}><div className="flex items-center border-r pl-2"><strong>Prénom</strong></div></Col>
-      <Col span={3}><div className="flex items-center border-r pl-2"><strong>Niveau</strong></div></Col>
-      <Col span={4}><div className="flex items-center border-r pl-2"><strong>Prof</strong></div></Col>
-      <Col span={3}><div className="flex items-center border-r pl-2"><strong>Heures accordés</strong></div></Col>
-      <Col span={3}><div className="flex items-center border-r pl-2"><strong>Heures Réelles</strong></div></Col>
-      <Col span={3}><div className="flex items-center border-r pl-2"><strong>Différence</strong></div></Col>
-      <Col span={4}  className=" pl-2"><strong>Planning et Options</strong></Col>
+      <Col span={4}><div className="flex items-center border-r pl-2">Prénom</div></Col>
+      <Col span={3}><div className="flex items-center border-r pl-2">Niveau</div></Col>
+      <Col span={4}><div className="flex items-center border-r pl-2">Prof</div></Col>
+      <Col span={3}><div className="flex items-center border-r pl-2">Heures accordées</div></Col>
+      <Col span={3}><div className="flex items-center border-r pl-2">Heures Réelles</div></Col>
+      <Col span={3}><div className="flex items-center border-r pl-2">Différence</div></Col>
+      <Col span={4}  className=" pl-2">Planning et Options</Col>
     </Row>
-    {children}    
+    {isLoading ? (
+      <div className="flex justify-center items-center min-h-screen">
+        <BeatLoader color="#B8336A" size={15} margin={2} />
+      </div>
+    ) : (
+      children
+    )}  
   </div>
   <div className="flex flex-row justify-center" >
   <Button  onClick={showModal}>Ajouter un ou plusieurs enfants</Button>

@@ -57,18 +57,22 @@ function Header() {
 
 
   return (
-    <header className=" flex justify-between items-center p-2  bg-white shadow border rounded border-gray-100">
+    < >
+    <header className=" flex justify-between items-center p-2 bg-opacity-60 bg-[#FAD4D8]">
     <div className="flex mt-auto ">  
-    <h2 className="text-gray-800 font-semibold text-4xl">
+    <h2 className="text-gray-800 font-semibold text-4xl cursor-pointer">
+    <Link href="/">
         <span className="inline-flex items-center">
           <AiOutlineCalendar />
           <span className="ml-2">AeshManager</span>
         </span>
+        </Link>
       </h2>
       <span className="flex ml-2 items-end ">
       <span className="ml-2">{schoolName}</span>
     </span>
     </div>
+    
 
       <div className="flex items-center">
        
@@ -86,7 +90,37 @@ function Header() {
           Déconnexion
         </button>
       </div>
+      
     </header>
+    <nav className="  w-100 min-h-0 border  border-gray-100">
+    <ul className="flex flex-row justify-center border items-center shadow-2xl">
+      <li>
+        <Link href="/enfants">
+          <a className="block px-8 py-2  rounded-md bg-white text-gray-700 uppercase transition-all duration-300 ease-in-out relative overflow-hidden group">
+            Enfants
+            <span className="absolute h-0.5 w-full bg-fad4d8 bottom-0 left-0 transform scale-x-0 transition-transform duration-300 ease-in-out group-hover:scale-x-100"></span>
+          </a>
+        </Link>
+      </li>
+      <li>
+        <Link href="/aesh">
+          <a className="block px-8 py-2  rounded-md bg-white text-gray-700 uppercase transition-all duration-300 ease-in-out relative overflow-hidden group">
+            Aesh
+            <span className="absolute h-0.5 w-full bg-fad4d8 bottom-0 left-0 transform scale-x-0 transition-transform duration-300 ease-in-out group-hover:scale-x-100"></span>
+          </a>
+        </Link>
+      </li>
+      <li>
+        <Link href="/classes">
+          <a className="block px-8 py-2  rounded-md bg-white text-gray-700 uppercase transition-all duration-300 ease-in-out relative overflow-hidden group">
+            Classes
+            <span className="absolute h-0.5 w-full bg-fad4d8 bottom-0 left-0 transform scale-x-0 transition-transform duration-300 ease-in-out group-hover:scale-x-100"></span>
+          </a>
+        </Link>
+      </li>
+    </ul>
+  </nav>
+  </>
   )
 }
 

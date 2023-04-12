@@ -265,6 +265,28 @@ function ChildClassPlanning({
     });
   }, [planningActual]);
 
+  function getBgClass(hoursReels) {
+    const minutes = convertToMinutes(hoursReels);
+  
+    if (minutes < -120) {
+      return "bg-red-500";
+    } else if (minutes >= -120 && minutes < 0) {
+      return "bg-yellow-500";
+    } else if (minutes === 0) {
+      return "bg-green-500";
+    } else if (minutes > 0 && minutes <= 120) {
+      return "bg-blue-500";
+    } else {
+      return "bg-purple-500";
+    }
+  }
+
+  function convertToMinutes(hoursReels) {
+    const [hours, minutes] = hoursReels.split(":");
+    return parseInt(hours) * 60 + parseInt(minutes);
+  }
+
+
   return (
     <>
     <Form
@@ -368,9 +390,9 @@ function ChildClassPlanning({
     </div>
   </Col>
   <Col span={3}>
-    <div className=" h-full p-1 flex flex-col items-center ">
+    <div  className={`border p-1 mr-1  text-l font-semibold bg-opacity-20 backdrop-blur-md ${getBgClass(subtractTime(hoursReels,hours))}`}>
       <span>Diff. : </span>
-      <span>{subtractTime(hoursReels, hours)}</span>
+      <span >{subtractTime(hoursReels, hours)}</span>
       </div>
       
         </Col>

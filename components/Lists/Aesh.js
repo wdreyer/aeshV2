@@ -62,23 +62,32 @@ function Aesh({planning,onSave, idAesh, firstName, level, teacher, hours,schoolI
     setIsModalOpen(false);
   };
 
+  function getBgClass(hoursReels) {
+    const minutes = convertToMinutes(hoursReels);
+  
+    if (minutes < -120) {
+      return "bg-red-500";
+    } else if (minutes >= -120 && minutes < 0) {
+      return "bg-yellow-500";
+    } else if (minutes === 0) {
+      return "bg-green-500";
+    } else if (minutes > 0 && minutes <= 120) {
+      return "bg-blue-500";
+    } else {
+      return "bg-purple-500";
+    }
+  }
+
+  function convertToMinutes(hoursReels) {
+    const [hours, minutes] = hoursReels.split(":");
+    return parseInt(hours) * 60 + parseInt(minutes);
+  }
+
 
   return (
     <>
       <div
-        className={` border p-2 shadow-md  text-l font-semibold  ${
-          level === "CP"
-            ? "bg-opacity-40 backdrop-blur-md bg-green-400"
-            : level === "CE1"
-            ? "bg-opacity-40 backdrop-blur-md bg-green-500"
-            : level === "CE2"
-            ? "bg-opacity-40 backdrop-blur-md bg-green-400"
-            : level === "CM1"
-            ? "bg-opacity-40 backdrop-blur-md bg-green-700"
-            : level === "CM2"
-            ? "bg-opacity-40 backdrop-blur-md bg-green-800"
-            : "bg-opacity-40 backdrop-blur-md bg-green-400"
-        }`}
+      className={`border p-2 shadow-md text-l font-semibold bg-opacity-40 backdrop-blur-md ${getBgClass(subtractTime(hoursReels,hours))}`}
       >
         <Row>
           <Col span={4} className="flex items-center border-r pl-2">

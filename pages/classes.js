@@ -14,6 +14,8 @@ import ChildClassPlanning from "../components/Plannings/ChildClassPlanning";
 import { auth, db } from "../firebaseConfig";
 import { subtractTime } from "../modules/time";
 import { calculHours } from "../modules/calculHours";
+import { BeatLoader } from 'react-spinners';
+
 
 function classePage() {
   const [user, loading, error] = useAuthState(auth);
@@ -26,6 +28,8 @@ const [teachers, setTeachers] = useState([]);
   const [levelsData, setLevelsData] = useState([]);
   const [selectedLevels, setSelectedLevels] = useState(levels);
   const [selectedTeachers, setSelectedTeachers] = useState(teachers);
+  const [isLoading, setIsLoading] = useState(true);
+
 
   useEffect(() => {
     fetchLevelsData();
@@ -36,7 +40,6 @@ const [teachers, setTeachers] = useState([]);
     setSelectedTeachers(teachers);
   }, [levels, teachers]);
 
-  console.log("teacher selectionnés :",selectedTeachers)
 
   useEffect(() => {
     if (selectedLevels.length > 0) {
@@ -224,6 +227,7 @@ const selectAllLevels = () => {
       });
 
       setChildrenData(updatedChildrenData);
+      setIsLoading(false);
     }
   };
 
@@ -249,23 +253,6 @@ const selectAllLevels = () => {
     return durations.filter((duration) => duration !== undefined);
   };
 
-  const children = childrenData.map((data, i) => {
-    return (
-      <ChildClassPlanning
-        key={data.id}
-        childID={data.id}
-        firstName={data.firstName}
-        level={data.level}
-        teacher={data.teacher}
-        hoursReels={data.hoursReels}
-        hours={data.hours}
-        schoolId={schoolId}
-        onSave={fetchChildren}
-        schoolRates={schoolRates}
-        planning={data.planning}
-      />
-    );
-  });
   const filteredChildrenList = filteredChildren().map((data, i) => {
     return (
       <ChildClassPlanning
@@ -306,7 +293,14 @@ const selectAllLevels = () => {
     </Checkbox.Group>
     </div>
       <div className="flex flex-wrap justify-center flex-row mb-2 text-lg font-semibold">
-        {filteredChildrenList}
+      {isLoading ? (
+        <div className="flex justify-center items-center min-h-screen">
+          <BeatLoader color="#38B2AC" size={15} margin={2} />
+        </div>
+      ) : (
+        filteredChildrenList
+      )}   
+     
       </div>
     </>
   );
