@@ -75,7 +75,7 @@ function Login() {
               src="MockupAeshM.png"
               alt="Capture d'écran 1"
               className="rounded-lg w-full"
-              style={{ width: '300px', height: '200px', textAlign: 'center' }}
+             
               
             />
         </div>
