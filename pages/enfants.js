@@ -1,14 +1,13 @@
-import { Button, Modal, Col, Row, Table } from "antd";
-import { collection, getDocs, query, updateDoc, where, doc } from "firebase/firestore";
-import { useRouter } from "next/router";
+import { Button, Col, Modal, Row } from "antd";
+import { collection, doc, getDocs, query, updateDoc, where } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
+import { BeatLoader } from 'react-spinners';
+import AddChild from "../components/Lists/AddChild";
 import Child from "../components/Lists/Child";
 import { auth, db } from "../firebaseConfig";
-import {subtractTime} from '../modules/time'
 import { calculHours } from "../modules/calculHours";
-import AddChild from "../components/Lists/AddChild";
-import { BeatLoader } from 'react-spinners';
+import { subtractTime } from '../modules/time';
 
 
 function childrenPage() {
@@ -18,6 +17,11 @@ function childrenPage() {
   const [schoolRates, setSchoolRates] = useState({})
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  function convertToMinutes(hoursReels) {
+    const [hours, minutes] = hoursReels.split(":");
+    return parseInt(hours) * 60 + parseInt(minutes);
+  }
+
 
 
   const showModal = async () => {
@@ -100,8 +104,13 @@ function childrenPage() {
           hoursReels: planningData ? planningData.hoursReels : '00:00',
         };
       });
+
+      const sortedChildrenData = updatedChildrenData
+          .sort((a, b) => convertToMinutes(subtractTime(a.hoursReels,a.hours)) - convertToMinutes(subtractTime(b.hoursReels,b.hours)))
+         
+
       setIsLoading(false);
-      setChildrenData(updatedChildrenData);
+      setChildrenData(sortedChildrenData);
     }
   };
 
@@ -141,6 +150,7 @@ function childrenPage() {
         onSave={fetchChildren}
         schoolRates={schoolRates}
         planning={data.planning}
+        option="children"
     
       />
     );
@@ -159,7 +169,8 @@ function childrenPage() {
       <Col span={4}  className=" pl-2">Planning et Options</Col>
     </Row>
     {isLoading ? (
-      <div className="flex justify-center items-center min-h-screen">
+      <div className="flex justify-center items-center "
+      style={{ minHeight: "10rem" }}>
         <BeatLoader color="#B8336A" size={15} margin={2} />
       </div>
     ) : (
@@ -175,6 +186,7 @@ function childrenPage() {
   footer={null}
   width={900}
   open={isModalOpen}
+
 >
 <AddChild onSave={handleOk}/>
 

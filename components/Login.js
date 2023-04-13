@@ -30,10 +30,11 @@ function Login() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-r from-[#FAD4E8] via-pink-custom to-pink-custom">
+    <>
+    <div >
       <title>AeshManager</title>
       <meta name="viewport" content="initial-scale=1.0, width=device-width" />
-      <header className="bg-white shadow-md">
+      <header className="bg-white shadow-md border">
         <div className="max-w-7xl mx-auto py-2 px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between">
             <h2 className="text-gray-600 font-semibold my-1 text-4xl">
@@ -44,8 +45,8 @@ function Login() {
             </h2>
             <div className="flex items-center">
               <button
-                className="drop-shadow-md bg-[#FAD4D8] hover:text-black hover:bg-[#FAD4E8] text-gray-700 font-bold pt-2 py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-                onClick={() => setModalIsOpen(true)}
+              className="drop-shadow-md bg-[#D4FAE3] hover:text-black hover:bg-[#D8FAD4] text-gray-700 font-bold pt-2 py-2 px-4 rounded-3xl border focus:outline-none focus:shadow-outline"
+              onClick={() => setModalIsOpen(true)}
               >
                 Se connecter
               </button>
@@ -54,67 +55,31 @@ function Login() {
         </div>
       </header>
 
-      <main className="flex flex-col items-center justify-center px-4 sm:px-6 lg:px-8 mt-12">
-        <div className="text-center">
-          <h2 className="text-4xl font-semibold mb-6">
-            Gestion simplifiée des plannings AESH
+      <main className="h-[28rem] bg-gradient-to-r from-[#FAD4E8] via-pink-custom to-pink-custom flex flex-row items-center justify-center px-4 sm:px-6 lg:px-8 ">
+        <div className="w-[38rem] text-center flex flex-col justify-center items-center h-full  m-4 p-4">
+          <h2 className="text-2xl  mb-6">
+          Simplifier vous la création  <strong>des plannings </strong> pour les <strong>Aesh</strong> et <strong>les enfants</strong> qui en ont besoin.
           </h2>
           <p className="text-lg mb-8">
-            AeshManager est une solution en ligne pour les directeurs d'école et les responsables de l'éducation qui permet de gérer facilement et rapidement les plannings des AESH et des élèves qui en ont besoin. En quelques clics, vous pouvez assigner des AESH aux élèves et inversement, optimisant ainsi la répartition des ressources humaines.
+            AeshManager est une solution en ligne pour les directeurs d'école et les responsables de l'éducation. En quelques clics, vous pouvez assigner des AESH aux élèves et inversement, vous pouvez calculer leurs heures réelles ainsi que la différence avec leurs contratsou leurs heures accordées.
           </p>
+          <button
+          className="drop-shadow-md bg-[#D4FAE3] hover:text-black hover:bg-[#D8FAD4] text-gray-700 font-bold pt-2 py-2 px-4 rounded-3xl border focus:outline-none focus:shadow-outline"
+          onClick={() => setModalIsOpen(true)}
+        >
+          Essayer Gratuitement
+        </button>
+        </div>
+        <div className="w-[38rem] h-full  m-4 flex justify-center items-center" >
+        <img
+              src="MockupAeshM.png"
+              alt="Capture d'écran 1"
+              className="rounded-lg w-full"
+              style={{ width: '300px', height: '200px', textAlign: 'center' }}
+              
+            />
         </div>
       </main>
-
-      <Modal
-        isOpen={modalIsOpen}
-        onRequestClose={() => setModalIsOpen(false)}
-        className="bg-white shadow-md rounded  px-8 pt-6 pb-8 mb-4 w-80 mx-auto mt-12"
-        overlayClassName="fixed inset-0 bg-gray-700 bg-opacity-50 flex items-center justify-center"
-      >
-        <h2 className="text-gray-600 font-semibold mb-4 text-4xl text-center">
-          <span className="inline-flex items-center">
-            <AiOutlineCalendar />
-            <span className="ml-2">Connexion</span>
-          </span>
-        </h2>
-        <form>
-          <div className="mb-4">
-            <input
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              type="email"
-              placeholder="Votre e-mail"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
-            <input
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              type="password"
-              placeholder="Votre mot de passe"
-              onChange={(e) => setPassword(e.target.value)}
-              value={password}
-            />
-          </div>
-          {connectionError && (
-            <span className="text-red-600">{connectionError} </span>
-          )}
-          <div className="flex items-center justify-between">
-            <button
-              className="drop-shadow-md bg-[#FAD4D8] w-full hover:text-black hover:bg-[#FAD4E8] text-gray-700 font-bold pt-2 py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-              type="submit"
-              onClick={handleForm}
-            >
-              Connection
-            </button>
-          </div>
-        </form>
-        <div className="pt-4 flex flex-col items-center justify-between text-sm">
-          <Link href="/signUp">
-            <a className="text-grey-500 hover:text-grey-900">
-              Pas de compte ? Inscrivez-vous
-            </a>
-          </Link>
-        </div>
-      </Modal>
 
       <section className="mt-16 px-4 sm:px-6 lg:px-8">
         <h3 className="text-2xl font-semibold mb-6 text-center">
@@ -145,6 +110,58 @@ function Login() {
         </div>
       </section>
     </div>
+    
+    <Modal
+    isOpen={modalIsOpen}
+    onRequestClose={() => setModalIsOpen(false)}
+    className="bg-white shadow-md rounded  px-8 pt-6 pb-8 mb-4 w-80 mx-auto mt-12"
+    overlayClassName="fixed inset-0 bg-gray-700 bg-opacity-50 flex items-center justify-center"
+  >
+    <h2 className="text-gray-600 font-semibold mb-4 text-4xl text-center">
+      <span className="inline-flex items-center">
+        <AiOutlineCalendar />
+        <span className="ml-2">Connexion</span>
+      </span>
+    </h2>
+    <form>
+      <div className="mb-4">
+        <input
+          className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+          type="email"
+          placeholder="Votre e-mail"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+        />
+        <input
+          className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+          type="password"
+          placeholder="Votre mot de passe"
+          onChange={(e) => setPassword(e.target.value)}
+          value={password}
+        />
+      </div>
+      {connectionError && (
+        <span className="text-red-600">{connectionError} </span>
+      )}
+      <div className="flex items-center justify-between">
+        <button
+          className="drop-shadow-md bg-[#FAD4D8] w-full hover:text-black hover:bg-[#FAD4E8] text-gray-700 font-bold pt-2 py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+          type="submit"
+          onClick={handleForm}
+        >
+          Connection
+        </button>
+      </div>
+    </form>
+    <div className="pt-4 flex flex-col items-center justify-between text-sm">
+      <Link href="/signUp">
+        <a className="text-grey-500 hover:text-grey-900">
+          Pas de compte ? Inscrivez-vous
+        </a>
+      </Link>
+    </div>
+  </Modal>
+</>
   )}
 
     export default Login;

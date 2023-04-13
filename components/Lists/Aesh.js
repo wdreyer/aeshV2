@@ -66,15 +66,15 @@ function Aesh({planning,onSave, idAesh, firstName, level, teacher, hours,schoolI
     const minutes = convertToMinutes(hoursReels);
   
     if (minutes < -120) {
-      return "bg-red-500";
+      return "bg-red-300";
     } else if (minutes >= -120 && minutes < 0) {
-      return "bg-yellow-500";
+      return "bg-yellow-300";
     } else if (minutes === 0) {
-      return "bg-green-500";
+      return "bg-green-300";
     } else if (minutes > 0 && minutes <= 120) {
-      return "bg-blue-500";
+      return "bg-blue-300";
     } else {
-      return "bg-purple-500";
+      return "bg-purple-300";
     }
   }
 
@@ -87,7 +87,7 @@ function Aesh({planning,onSave, idAesh, firstName, level, teacher, hours,schoolI
   return (
     <>
       <div
-      className={`border p-2 shadow-md text-l font-semibold bg-opacity-40 backdrop-blur-md ${getBgClass(subtractTime(hoursReels,hours))}`}
+      className={`border p-2 shadow-md text-l font-semibold bg-opacity-30 backdrop-blur-md ${getBgClass(subtractTime(hoursReels,hours))}`}
       >
         <Row>
           <Col span={4} className="flex items-center border-r pl-2">

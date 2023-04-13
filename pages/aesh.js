@@ -10,8 +10,6 @@ import { calculHours } from "../modules/calculHours";
 import AddAesh from "../components/Lists/AddAesh";
 import { BeatLoader } from 'react-spinners';
 
-
-
 function aeshPage() {
   const [user, loading, error] = useAuthState(auth);
   const [aeshData, setAeshData] = useState([]);
@@ -160,7 +158,8 @@ function aeshPage() {
       <Col span={5}  className=" pl-2"><strong>Planning et Options</strong></Col>
     </Row>
     {isLoading ? (
-      <div className="flex justify-center items-center min-h-screen">
+      <div className="flex justify-center items-center "
+      style={{ minHeight: "30rem" }}>
         <BeatLoader color="#B8336A" size={15} margin={2} />
       </div>
     ) : (

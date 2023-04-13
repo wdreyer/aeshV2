@@ -294,8 +294,9 @@ const selectAllLevels = () => {
     </div>
       <div className="flex flex-wrap justify-center flex-row mb-2 text-lg font-semibold">
       {isLoading ? (
-        <div className="flex justify-center items-center min-h-screen">
-          <BeatLoader color="#38B2AC" size={15} margin={2} />
+        <div className="flex justify-center items-center"
+         style={{ minHeight: "10rem" }}>
+          <BeatLoader color="#B8336A" size={15} margin={2} />
         </div>
       ) : (
         filteredChildrenList

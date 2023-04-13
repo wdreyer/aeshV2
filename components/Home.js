@@ -8,6 +8,7 @@ import { auth, db } from "../firebaseConfig";
 import {subtractTime} from '../modules/time'
 import { calculHours } from "../modules/calculHours";
 import AddChild from "../components/Lists/AddChild";
+import ChildDashboard from "./Lists/ChildDashboard";
 
 const timeToMinutes = (time) => {
   const [hours, minutes] = time.split(':');
@@ -104,12 +105,7 @@ function Home() {
     </div>
     <div className="border w-full lg:w-2/5 flex flex-col rounded py-2  justify-center text-lg font-semibold  shadow-md">
     <span className="text-center text-xl mb-2" > Enfants avec la diff les plus importantes : </span>
-    <div className=" rounded mb-2 text-m  font-semibold  flex flex-col" >
-    <div className="flex flex-row border   font-semibold p-2 justify-between"><span >Nbre d/enfants :</span><span>{childrenData.total}</span></div>
-    <div className="flex flex-row border  font-semibold p-2 justify-between" > <span  >Heures Accordés :</span><span>{childrenData.total}</span></div>
-    <div className="flex flex-row border font-semibold p-2 justify-between"><span  >Heures Réelles :</span><span>{childrenData.total}</span></div>
-    <div className="flex flex-row border   font-semibold p-2 justify-between" ><span >Différence :</span><span>{childrenData.total}</span></div>
-    </div>
+   <ChildDashboard/>
     </div>
     <div className="border w-full lg:w-2/5 flex flex-col rounded py-2  justify-center text-lg font-semibold  shadow-md">
     <span className="text-center text-xl mb-2" > Aesh avec la diff les plus importantes : </span>
