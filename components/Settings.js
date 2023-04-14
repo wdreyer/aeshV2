@@ -363,12 +363,14 @@ function formatData(data) {
             <Input disabled />
           </Form.Item>
 
+           {userId ==! "2lgNK2mgG2Z9aWldezuv823kVSl1" ? 
           <div
             className="mx-1 my-1 text-blue-400 text-left cursor-pointer underline hover:text-blue-600"
             onClick={showModal}
           >
             Changer le mot de passe
-          </div>
+          </div> : ""
+        }
 
           <Form.Item
             label="Nom de l'école"

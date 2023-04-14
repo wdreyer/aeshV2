@@ -4,7 +4,7 @@ import React from "react";
 import Layout from "../components/Layout/Layout";
 import { auth } from "../firebaseConfig";
 import { useAuthState } from "react-firebase-hooks/auth";
-import Login from "../components/Login";
+import Landing from "../components/Landing";
 import InscriptionForm from "../components/SignUpProcess/InscriptionForm";
 import { useRouter } from "next/router";
 import { BeatLoader } from 'react-spinners';
@@ -14,7 +14,7 @@ React.useLayoutEffect = React.useEffect;
 function App({ Component, pageProps }) {
   const [user, loading, error] = useAuthState(auth);
   const router = useRouter();
-  const isLoginPage = router.pathname === "/login";
+  const isLandingPage = router.pathname === "/Landing";
   const isSignUpPage = router.pathname === "/signUp";
 
 
@@ -37,12 +37,12 @@ function App({ Component, pageProps }) {
       <Layout>
         <Component {...pageProps} />
       </Layout>
-    ) : isLoginPage ? (
-      <Login />
+    ) : isLandingPage ? (
+      <Landing />
     ) : isSignUpPage ? (
       <InscriptionForm />
     ) : (
-      <Login />
+      <Landing />
     )}
   </>
 );

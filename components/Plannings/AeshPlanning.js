@@ -363,7 +363,7 @@ function AeshPlanning({
           </div>
           {isEditing ? (
             <>
-              <span>Heures accordées :</span>
+              <span>Contrat :</span>
               <div className="mb-0 flex flex-row">
                 <Form.Item className="mb-0" name="startHours">
                   <InputNumber min={0} max={59} placeholder="HH" />
@@ -375,7 +375,7 @@ function AeshPlanning({
             </>
           ) : (
             <div className="border p-1 flex flex-row justify-between">
-              <span>Heures accordées : </span>
+              <span>Contrat : </span>
               <span>{aeshData.hours}</span>
             </div>
           )}

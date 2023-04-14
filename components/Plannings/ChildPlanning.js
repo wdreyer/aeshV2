@@ -11,12 +11,11 @@ import {
   updateDoc, 
 } from "firebase/firestore";
 import { ExclamationCircleOutlined } from '@ant-design/icons';
-
-
 import { useAuthState } from "react-firebase-hooks/auth";
 import { auth, db } from "../../firebaseConfig";
 import { AiOutlineEdit, AiOutlineSave } from "react-icons/ai";
 import { subtractTime } from "../../modules/time";
+import { calculHours } from "../../modules/calculHours";
 
 const { Option } = Select;
 
@@ -28,8 +27,9 @@ function ChildPlanning({
   hoursReels,
   schoolId,
   childID,
-  planning,
   onSave,
+  planning,
+  schoolTime
 }) {
   const [form] = Form.useForm();
   const [planningActual, setPlanningActual] = useState({});
@@ -49,25 +49,22 @@ function ChildPlanning({
       teacher,
       hours,
       hoursReels,
-      planning,
     })
-
-  useEffect(() => {
-    setPlanningActual(planning);
-    setChildData({firstName,
-      level,
-      teacher,
-      hours,
-      hoursReels,
-      planning,})
-  }, [planning]);
+    useEffect(() => {   
+      setPlanningActual(planning)  
+        setChildData({
+          firstName,
+          level,
+          teacher,
+          hours,
+          hoursReels,
+        });
+    }, [planning]);
 
   const fetchLevelsData = async () => {
     const schoolDoc = await getSchoolDoc();
     setLevelsData(schoolDoc.data().levelsData);
   };
-  
-
 
   const fetchAeshList = async () => {
     const aeshRef = collection(db, `schools/${schoolId}/aesh`);
@@ -159,9 +156,7 @@ function ChildPlanning({
   const updateDatabase = async (newPlanning, nameChild) => {
     await deleteOldPlanning(childID);
     await deleteAeshFromNewPlanning(newPlanning);
-
     const batch = writeBatch(db);
-
     for (const weekday in newPlanning) {
       for (const timeslot in newPlanning[weekday]) {
         const { idAesh, nameAesh } = newPlanning[weekday][timeslot];
@@ -180,7 +175,6 @@ function ChildPlanning({
         });
       }
     }
-
     await batch.commit();
   };
 
@@ -188,8 +182,6 @@ function ChildPlanning({
     try {
       const childRef = doc(db, `schools/${schoolId}/children`, childID);
       await updateDoc(childRef, updatedChildData);
-      setChildData(updatedChildData);
-      
     } catch (error) {
       console.error("Failed to update child: ", error);
     }
@@ -202,14 +194,12 @@ function ChildPlanning({
     catch (error) {
       return
       console.error("Failed to get form values: ", error);
-    }
-   
+    }   
     try {
       const formValues = await form.validateFields();
       console.log("formulaire", formValues )
       const result = {};
-      const nameChild = formValues.firstName;
-  
+      const nameChild = formValues.firstName;  
       // Process form values
       for (const key in formValues) {
         if (formValues.hasOwnProperty(key)) {
@@ -223,20 +213,25 @@ function ChildPlanning({
           }
         }
       }  
-      console.log(result)
-      await updateDatabase(result, nameChild);
-      await updateChild(childID, {
+      const hoursReels = calculHours(result, schoolTime)
+      setPlanningActual(result);
+      setChildData({
+        hoursReels : hoursReels,
         firstName: formValues.firstName,
         level: formValues.level,
         teacher: formValues.teacher,
         hours: `${formValues.startHours}:${String(formValues.startMinutes).padStart(2, '0')}`
-
+      });
+      setIsEditing(false);
+      await updateDatabase(result, nameChild);
+      await updateChild(childID, {
+        hoursReels : hoursReels,
+        firstName: formValues.firstName,
+        level: formValues.level,
+        teacher: formValues.teacher,
+        hours: `${formValues.startHours}:${String(formValues.startMinutes).padStart(2, '0')}`
       });
 
-
-
-  
-      // Clear old values
       weekDays.forEach((weekday) => {
         timeSlots.forEach((timeslot) => {
           if (!result[weekday] || !result[weekday][timeslot]) {
@@ -245,7 +240,6 @@ function ChildPlanning({
         });
       });
   
-      // Update the form values
       for (const weekday in result) {
         for (const timeslot in result[weekday]) {
           form.setFieldsValue({
@@ -256,9 +250,8 @@ function ChildPlanning({
           });
         }
       }
-      onSave()
-      setPlanningActual(result);
-      setIsEditing(false);
+      onSave("updateall")
+ 
     } catch (error) {
       console.error("Failed to get form values: ", error);
     }
@@ -273,7 +266,6 @@ function ChildPlanning({
   const timeSlots = ["Matin 1", "Matin 2", "Après-midi 1", "Après-midi 2"];
   const weekDays = ["Lundi", "Mardi", "Jeudi", "Vendredi"];
   
-
   
   useEffect(() => {
     weekDays.forEach((weekday) => {

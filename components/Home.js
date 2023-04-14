@@ -9,6 +9,7 @@ import {subtractTime} from '../modules/time'
 import { calculHours } from "../modules/calculHours";
 import AddChild from "../components/Lists/AddChild";
 import ChildDashboard from "./Lists/ChildDashboard";
+import AeshDashboard from "./Lists/AeshDashboard"
 
 const timeToMinutes = (time) => {
   const [hours, minutes] = time.split(':');
@@ -30,9 +31,26 @@ const minutesToTime = (minutes) => {
 
 
 function Home() {
+  
   const [user, loading, error] = useAuthState(auth);
   const [childrenData, setChildrenData] = useState({ total: 0, hours: "00:00", hoursReels: "00:00", difference: "00:00" });
   const [aeshData, setAeshData] = useState({ total: 0, hours: "00:00", hoursReels: "00:00", difference: "00:00" });
+  const [showModal, setShowModal] = useState(false);
+
+  const hasModalBeenShown = () => {
+    return localStorage.getItem("hasModalBeenShown") === "true";
+  };
+
+  const handleCloseModal = () => {
+    setShowModal(false);
+    localStorage.setItem("hasModalBeenShown", "true");
+  };
+
+  useEffect(() => {
+    if (user && user.uid === "2lgNK2mgG2Z9aWldezuv823kVSl1" && !hasModalBeenShown()) {
+      setShowModal(true);
+    }
+  }, [user]);
 
   const getSchoolDoc = async () => {
     const q = query(collection(db, "schools"), where("userId", "==", user.uid));
@@ -88,7 +106,7 @@ function Home() {
     <div className="border w-full lg:w-2/5 flex flex-col rounded py-2  justify-center text-lg font-semibold  shadow-md">
     <span className="text-center text-xl mb-2" > Statistiques Enfants : </span>
     <div className=" rounded mb-2 text-m  font-semibold  flex flex-col" >
-    <div className="flex flex-row border font-semibold p-2 justify-between"><span >Nbre d/enfants :</span><span>{childrenData.total}</span></div>
+    <div className="flex flex-row border font-semibold p-2 justify-between"><span >Nbre d'enfants :</span><span>{childrenData.total}</span></div>
     <div className="flex flex-row border  font-semibold p-2 justify-between" > <span  >Heures Accordées :</span><span>{childrenData.hours}</span></div>
     <div className="flex flex-row border font-semibold p-2 justify-between"><span  >Heures Réelles :</span><span>{childrenData.hoursReels}</span></div>
     <div className="flex flex-row border   font-semibold p-2 justify-between" ><span >Différence :</span><span>{childrenData.difference}</span></div>
@@ -97,26 +115,31 @@ function Home() {
     <div className="border w-full lg:w-2/5 flex flex-col rounded py-2  justify-center text-lg font-semibold  shadow-md">
     <span className="text-center text-xl mb-2" > Statistiques Aesh : </span>
     <div className=" rounded mb-2 text-m  font-semibold  flex flex-col" >
-    <div className="flex flex-row border   font-semibold p-2 justify-between"><span >Nbre d/enfants :</span><span>{aeshData.total}</span></div>
-    <div className="flex flex-row border  font-semibold p-2 justify-between" > <span  >Heures Accordés :</span><span>{aeshData.hours}</span></div>
+    <div className="flex flex-row border   font-semibold p-2 justify-between"><span >Nbre d'enfants :</span><span>{aeshData.total}</span></div>
+    <div className="flex flex-row border  font-semibold p-2 justify-between" > <span>  Total Contrats:</span><span>{aeshData.hours}</span></div>
     <div className="flex flex-row border font-semibold p-2 justify-between"><span  >Heures Réelles :</span><span>{aeshData.hoursReels}</span></div>
     <div className="flex flex-row border   font-semibold p-2 justify-between" ><span >Différence :</span><span>{aeshData.difference}</span></div>
     </div>
     </div>
     <div className="border w-full lg:w-2/5 flex flex-col rounded py-2  justify-center text-lg font-semibold  shadow-md">
-    <span className="text-center text-xl mb-2" > Enfants avec la diff les plus importantes : </span>
+    <span className="text-center text-xl mb-2" >Apercu des enfants :</span>
    <ChildDashboard/>
     </div>
     <div className="border w-full lg:w-2/5 flex flex-col rounded py-2  justify-center text-lg font-semibold  shadow-md">
-    <span className="text-center text-xl mb-2" > Aesh avec la diff les plus importantes : </span>
-    <div className=" rounded mb-2 text-m  font-semibold  flex flex-col" >
-    <div className="flex flex-row border   font-semibold p-2 justify-between"><span >Nbre d/enfants :</span><span>{childrenData.total}</span></div>
-    <div className="flex flex-row border  font-semibold p-2 justify-between" > <span  >Heures Accordés :</span><span>{childrenData.total}</span></div>
-    <div className="flex flex-row border font-semibold p-2 justify-between"><span  >Heures Réelles :</span><span>{childrenData.total}</span></div>
-    <div className="flex flex-row border   font-semibold p-2 justify-between" ><span >Différence :</span><span>{childrenData.total}</span></div>
+    <span className="text-center text-xl mb-2" > Apercu des Aesh : </span>
+   <AeshDashboard/>
     </div>
+    <Modal
+    title="Version d'essai"
+    visible={showModal}
+    onCancel={handleCloseModal}
+    footer={''}
+  >
+    <p>Vous pouvez essayer les fonctionnalités de cette application avec cette version d'essai.</p>
+    <p>N'hésitez pas à naviguer dans l'application et à tester l'ensemble des possibilités.</p>
+  </Modal>
     </div>
-  </div>
+
   )
 }
 

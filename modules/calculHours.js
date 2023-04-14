@@ -1,5 +1,5 @@
 function calculHours(planning, rates) {
-  console.log(planning, rates);
+  console.log("calculhour",planning, rates);
 
   // Initialization of the total to 0
   let totalMinutes = 0;

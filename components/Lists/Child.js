@@ -15,15 +15,18 @@ import {
   writeBatch,
   doc,
   deleteDoc,
+  updateDoc,
 } from "firebase/firestore";
 import { auth, db } from "../../firebaseConfig";
 import { useAuthState } from "react-firebase-hooks/auth";
+
 import ChildPlanning from "../Plannings/ChildPlanning";
 import { useEffect, useState } from "react";
 import { calculHours } from "../../modules/calculHours";
 import { subtractTime } from "../../modules/time";
+import { BeatLoader } from 'react-spinners';
+
 function Child({
-  planning,
   onSave,
   childID,
   firstName,
@@ -38,9 +41,87 @@ function Child({
   const { confirm } = Modal;
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
+  const [planning, setPlanning] = useState({});
+  const [user, loading, error] = useAuthState(auth);
+  const [schoolTime, setSchoolTime] = useState()
+    const [isLoading, setIsLoading] = useState(false);
 
-  const showModal = async () => {
+
+  const fetchData = async () => {
+    setIsLoading(true);
+    const durations = await getSchoolTimeObj();
+    console.log(durations)
+    setSchoolTime(durations);
+    const planning = await fetchChildPlanning(childID, schoolId, durations);
+    setPlanning(planning.planning);
+    setIsLoading(false)
+  };
+
+  const getSchoolTimeObj = async () => {
+    const schoolDoc = await getSchoolDoc();
+    const { timeObj } = schoolDoc.data();
+    const durations = Object.entries(timeObj)
+      .map(([slot, time]) => {
+        const isStart = slot.includes("Start");
+        const slotName = slot.split(".")[0];
+        if (!isStart) {
+          return {
+            slot: slotName,
+            duration: subtractTime(time, timeObj[`${slotName}.Start`]),
+          };
+        }
+      })
+      .filter((duration) => duration !== undefined);
+
+    return durations;
+  };
+
+  const getSchoolDoc = async () => {
+    const q = query(collection(db, "schools"), where("userId", "==", user.uid));
+    const querySnapshot = await getDocs(q);
+    return querySnapshot.docs[0];
+  };
+  const fetchChildPlanning = async (childID, schoolId, schoolTime) => {
+    if (schoolId && childID) {
+      try {
+        const cellPlanningsRef = collection(
+          db,
+          `schools/${schoolId}/cellPlanning`
+        );
+        const q = query(cellPlanningsRef, where("childId", "==", childID));
+        const querySnapshot = await getDocs(q);
+        const fetchedPlann = querySnapshot.docs.reduce((acc, doc) => {
+          const { weekday, timeslot, nameAesh, idAesh } = doc.data();
+          return {
+            ...acc,
+            [weekday]: {
+              ...acc[weekday],
+              [timeslot]: { nameAesh, idAesh },
+            },
+          };
+        }, {});
+
+        const hoursReels = calculHours(fetchedPlann, schoolTime);
+        const docRef = doc(db, `/schools/${schoolId}/children/${childID}`);
+        await updateDoc(docRef, { hoursReels: hoursReels });
+        return {
+          childID,
+          hoursReels: hoursReels,
+          planning: fetchedPlann,
+        };
+      } catch (error) {
+        console.error("Error fetching planning data:", error);
+        return null;
+      }
+    } else {
+      console.warn("Cannot fetch planning data for undefined child or school");
+      return null;
+    }
+  };
+
+  const showModal = () => {
     setIsModalOpen(true);
+    fetchData();
   };
 
   const handleOk = () => {
@@ -121,7 +202,10 @@ function Child({
           <Col span={4} className="flex items-center border-r pl-2">
             {firstName}
           </Col>
-          <Col span={option === "children" ? 3 : 4} className="flex items-center border-r pl-2">
+          <Col
+            span={option === "children" ? 3 : 4}
+            className="flex items-center border-r pl-2"
+          >
             {level}
           </Col>
           <Col span={4} className="flex items-center border-r pl-2">
@@ -151,7 +235,10 @@ function Child({
           >
             {subtractTime(hoursReels, hours)}
           </Col>
-          <Col span={option === "children" ? 3 : 7} className="flex-row text-center text-3xl ">
+          <Col
+            span={option === "children" ? 3 : 7}
+            className="flex-row text-center text-3xl "
+          >
             <AiOutlineCalendar
               onClick={showModal}
               className="inline hover:text-black text-gray-600 cursor-pointer mr-2"
@@ -166,27 +253,36 @@ function Child({
         </Row>
       </div>
       <Modal
-        title={"Planning de " + firstName}
+        title={'Planning de ' + firstName}
         onOk={handleOk}
         onCancel={handleCancel}
         footer={null}
         width={900}
         open={isModalOpen}
-        
       >
-        <ChildPlanning
-          {...{
-            planning,
-            onSave,
-            hoursReels,
-            firstName,
-            childID,
-            level,
-            teacher,
-            hours,
-            schoolId,
-          }}
-        />
+        {isLoading ? (
+          <div
+            className="flex justify-center items-center"
+            style={{ minHeight: '10rem' }}
+          >
+            <BeatLoader color="#B8336A" size={15} margin={2} />
+          </div>
+        ) : (
+          <ChildPlanning
+            {...{
+              onSave,
+              hoursReels,
+              firstName,
+              childID,
+              level,
+              teacher,
+              hours,
+              schoolId,
+              planning,
+              schoolTime,
+            }}
+          />
+        )}
       </Modal>
     </>
   );

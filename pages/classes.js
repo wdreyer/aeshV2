@@ -16,7 +16,6 @@ import { subtractTime } from "../modules/time";
 import { calculHours } from "../modules/calculHours";
 import { BeatLoader } from 'react-spinners';
 
-
 function classePage() {
   const [user, loading, error] = useAuthState(auth);
   const [childrenData, setChildrenData] = useState([]);
@@ -26,20 +25,21 @@ function classePage() {
 const [levels, setLevels] = useState([]);
 const [teachers, setTeachers] = useState([]);
   const [levelsData, setLevelsData] = useState([]);
-  const [selectedLevels, setSelectedLevels] = useState(levels);
-  const [selectedTeachers, setSelectedTeachers] = useState(teachers);
-  const [isLoading, setIsLoading] = useState(true);
+  const [selectedLevels, setSelectedLevels] = useState([]);
+const [selectedTeachers, setSelectedTeachers] = useState([]);
+const [schoolTime, setSchoolTime] = useState()
+
 
 
   useEffect(() => {
     fetchLevelsData();
+    const  fetchSchoolTime = async () => {
+      const durations = await getSchoolTimeObj();
+    console.log(durations)
+    setSchoolTime(durations);
+  }
+  fetchSchoolTime()
   }, [user, loading]);
-
-  useEffect(() => {
-    setSelectedLevels(levels);
-    setSelectedTeachers(teachers);
-  }, [levels, teachers]);
-
 
   useEffect(() => {
     if (selectedLevels.length > 0) {
@@ -73,16 +73,13 @@ const [teachers, setTeachers] = useState([]);
   }
 
   const filteredChildren = () => {
-    if (selectedTeachers.length === 0){
-      return filtered = [];
+    if (selectedLevels.length === 0 || selectedTeachers.length === 0) {
+      return [];
     }
-
-
+  
     let filtered = childrenData;
     if (selectedLevels.length > 0) {
       filtered = filtered.filter((child) => selectedLevels.includes(child.level));
-    } else {
-      filtered = [];
     }
     if (selectedTeachers.length > 0) {
       filtered = filtered.filter((child) =>
@@ -91,6 +88,7 @@ const [teachers, setTeachers] = useState([]);
     }
     return filtered;
   };
+  
 
   const levelCheckboxes = levels.map((level) => (
     <Checkbox key={level} value={level}>
@@ -227,7 +225,7 @@ const selectAllLevels = () => {
       });
 
       setChildrenData(updatedChildrenData);
-      setIsLoading(false);
+
     }
   };
 
@@ -267,6 +265,7 @@ const selectAllLevels = () => {
         onSave={fetchChildren}
         schoolRates={schoolRates}
         planning={data.planning}
+        schoolTime={schoolTime}
       />
     );
   });
@@ -292,15 +291,9 @@ const selectAllLevels = () => {
       {teacherCheckboxes}
     </Checkbox.Group>
     </div>
-      <div className="flex flex-wrap justify-center flex-row mb-2 text-lg font-semibold">
-      {isLoading ? (
-        <div className="flex justify-center items-center"
-         style={{ minHeight: "10rem" }}>
-          <BeatLoader color="#B8336A" size={15} margin={2} />
-        </div>
-      ) : (
-        filteredChildrenList
-      )}   
+      <div className="flex flex-wrap justify-center flex-row rounded-lg text-lg font-semibold">
+    
+       {filteredChildrenList}   
      
       </div>
     </>

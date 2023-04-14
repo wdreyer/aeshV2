@@ -9,7 +9,7 @@ import {
 import { db } from "../../firebaseConfig";
 import { subtractTime } from "../../modules/time";
 import AeshPlanning from "../Plannings/AeshPlanning";
-function Aesh({planning,onSave, idAesh, firstName, level, teacher, hours,schoolId, hoursReels }) {
+function Aesh({planning,onSave, idAesh, firstName, level, teacher, hours,schoolId, hoursReels, option }) {
   const [form] = Form.useForm();
   const { confirm } = Modal;
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -94,24 +94,24 @@ function Aesh({planning,onSave, idAesh, firstName, level, teacher, hours,schoolI
             {firstName}
           </Col>
           <Col
-            span={5}
+            span={option === "aesh" ? 5 : 4}
             className="flex items-center text-center px-2 border-r pl-2"
           >
             {hours}
           </Col>
           <Col
-            span={5}
+            span={option === "aesh" ? 5 : 4}
             className="flex items-center text-center px-2 border-r pl-2"
           >
            {hoursReels}
           </Col>
           <Col
-            span={5}
+            span={option === "aesh" ? 5 : 4}
             className="flex items-center text-center px-2 border-r pl-2"
           >
            {subtractTime(hoursReels,hours)}
           </Col>
-          <Col span={5} className="flex-row text-center text-3xl ">
+          <Col span={option === "aesh" ? 5 : 7} className="flex-row text-center text-3xl ">
             <AiOutlineCalendar
               onClick={showModal}
               className="inline hover:text-black text-gray-600 cursor-pointer mr-2"

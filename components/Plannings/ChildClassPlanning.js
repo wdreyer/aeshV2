@@ -13,6 +13,8 @@ import { useAuthState } from "react-firebase-hooks/auth";
 import { AiOutlineEdit, AiOutlineSave } from "react-icons/ai";
 import { auth, db } from "../../firebaseConfig";
 import { subtractTime } from "../../modules/time";
+import { calculHours } from "../../modules/calculHours";
+
 const { Option } = Select;
 function ChildClassPlanning({
   firstName,
@@ -24,12 +26,13 @@ function ChildClassPlanning({
   childID,
   planning,
   onSave,
+  schoolTime
 }) {
 
   const [form] = Form.useForm();
   const [planningActual, setPlanningActual] = useState({});
   const [levelsData, setLevelsData] = useState([]);
-   const [aeshList, setAeshList] = useState([]);
+  const [aeshList, setAeshList] = useState([]);
   const [user, loading, error] = useAuthState(auth);
   const [isEditing, setIsEditing] = useState(false);
   const [levelSelected, setLevelSelected] = useState(level);
@@ -142,9 +145,7 @@ function ChildClassPlanning({
   const updateDatabase = async (newPlanning, nameChild) => {
     await deleteOldPlanning(childID);
     await deleteAeshFromNewPlanning(newPlanning);
-
     const batch = writeBatch(db);
-
     for (const weekday in newPlanning) {
       for (const timeslot in newPlanning[weekday]) {
         const { idAesh, nameAesh } = newPlanning[weekday][timeslot];
@@ -171,7 +172,6 @@ function ChildClassPlanning({
     try {
       const childRef = doc(db, `schools/${schoolId}/children`, childID);
       await updateDoc(childRef, updatedChildData);
-      setChildData(updatedChildData);
     } catch (error) {
       console.error("Failed to update child: ", error);
     }
@@ -184,13 +184,11 @@ function ChildClassPlanning({
       return;
       console.error("Failed to get form values: ", error);
     }
-
     try {
       const formValues = await form.validateFields();
       console.log("formulaire", formValues);
       const result = {};
       const nameChild = formValues.firstName;
-
       // Process form values
       for (const key in formValues) {
         if (formValues.hasOwnProperty(key)) {
@@ -204,7 +202,16 @@ function ChildClassPlanning({
           }
         }
       }
-      console.log(result);
+      const hoursReels = calculHours(result, schoolTime)
+      setPlanningActual(result);
+      setChildData({
+        hoursReels : hoursReels,
+        firstName: formValues.firstName,
+        level: formValues.level,
+        teacher: formValues.teacher,
+        hours: `${formValues.startHours}:${String(formValues.startMinutes).padStart(2, '0')}`
+      });
+      setIsEditing(false);
       await updateDatabase(result, nameChild);
       await updateChild(childID, {
         firstName: formValues.firstName,
@@ -236,8 +243,8 @@ function ChildClassPlanning({
         }
       }
       onSave();
-      setPlanningActual(result);
-      setIsEditing(false);
+   
+     
     } catch (error) {
       console.error("Failed to get form values: ", error);
     }
@@ -267,17 +274,17 @@ function ChildClassPlanning({
 
   function getBgClass(hoursReels) {
     const minutes = convertToMinutes(hoursReels);
-  
+    console.log(minutes)
     if (minutes < -120) {
-      return "bg-red-500";
+      return "bg-red-300";
     } else if (minutes >= -120 && minutes < 0) {
-      return "bg-yellow-500";
+      return "bg-yellow-300";
     } else if (minutes === 0) {
-      return "bg-green-500";
+      return "bg-green-300";
     } else if (minutes > 0 && minutes <= 120) {
-      return "bg-blue-500";
+      return "bg-blue-300";
     } else {
-      return "bg-purple-500";
+      return "bg-purple-300";
     }
   }
 
@@ -288,7 +295,7 @@ function ChildClassPlanning({
 
 
   return (
-    <>
+    <div  className="w-planning m-3  backdrop-blur-md rounded-lg shadow-lg">
     <Form
     onFinish={onFinish}
     initialValues={{
@@ -299,10 +306,8 @@ function ChildClassPlanning({
     }}
     layout="vertical"
     form={form}
-    className="w-planning m-1  backdrop-blur-md border rounded shadow"
-
   >
-  <Row className="p-1 mb-2 rounded bg-slate-100 text-l font-semibold">
+  <Row className={`p-1 mb-2  text-l font-semibold ${getBgClass(subtractTime(hoursReels, hours))}`}>
   <Col span={5}>
     <div className=" p-1 flex flex-col items-center justify-between">
       <span>Prénom : </span>
@@ -390,7 +395,7 @@ function ChildClassPlanning({
     </div>
   </Col>
   <Col span={3}>
-    <div  className={`border p-1 mr-1  text-l font-semibold bg-opacity-20 backdrop-blur-md ${getBgClass(subtractTime(hoursReels,hours))}`}>
+    <div  className={` p-1 mr-1  text-l font-semibold bg-opacity-20 backdrop-blur-md `}>
       <span>Diff. : </span>
       <span >{subtractTime(hoursReels, hours)}</span>
       </div>
@@ -489,7 +494,7 @@ function ChildClassPlanning({
           ))}
         </div>        
       </Form>
-    </>
+    </div>
   );
 }
 

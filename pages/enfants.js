@@ -23,6 +23,7 @@ function childrenPage() {
   }
 
 
+    
 
   const showModal = async () => {
     setIsModalOpen(true);
@@ -83,7 +84,8 @@ function childrenPage() {
     }
   };
 
-  const fetchChildren = async () => {
+  const fetchChildren = async (updateall) => {
+    console.log("functionsallchildren",updateall)
     
     if (!loading && user) {
       const schoolDoc = await getSchoolDoc();
@@ -93,9 +95,9 @@ function childrenPage() {
       const childrenSnapshot = await getDocs(collection(schoolDoc.ref, "children"));
       const children = childrenSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
   
+      if(updateall){
       const childrenPlannings = await Promise.all(children.map(child => fetchChildPlanning(child.id,schoolDoc.id,schoolTime)));
   
-      // Combine children data with their respective planning data
       const updatedChildrenData = children.map((child, index) => {
         const planningData = childrenPlannings[index];
         return {
@@ -105,13 +107,19 @@ function childrenPage() {
         };
       });
 
-      const sortedChildrenData = updatedChildrenData
+      setChildrenData(updatedChildrenData.sort((a, b) => convertToMinutes(subtractTime(a.hoursReels,a.hours)) - convertToMinutes(subtractTime(b.hoursReels,b.hours)))
+      );
+    }
+    else {
+
+      const sortedChildrenData = children
           .sort((a, b) => convertToMinutes(subtractTime(a.hoursReels,a.hours)) - convertToMinutes(subtractTime(b.hoursReels,b.hours)))
          
 
       setIsLoading(false);
       setChildrenData(sortedChildrenData);
     }
+  }
   };
 
     useEffect(() => {
