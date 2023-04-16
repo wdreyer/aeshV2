@@ -27,7 +27,7 @@ const AboutMe = ({ }) => {
   return (
     <motion.div
     ref={ref}
-    className="flex flex-col space-y-4 w-[30rem] mx-auto"
+    className="flex flex-col space-y-4 w-full lg:w-[30rem] mx-auto"
     initial="hidden"
     animate={controls}
     transition={{ duration: 1 }}

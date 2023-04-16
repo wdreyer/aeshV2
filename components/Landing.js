@@ -93,26 +93,26 @@ function Landing() {
     <div id="top"></div>
       <title>AeshManager</title>
       <meta name="viewport" content="initial-scale=1.0, width=device-width" />
-      <header className="bg-white shadow-md border fixed w-full z-50 h-[70px]  top-0">
-        <div className="max-w-7xl mx-auto py-2 px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-row items-center justify-between">
-            <h2 onClick={scrollToTop} className="text-gray-600 cursor-pointer hover:text-black flex flex-row items-center justify-between font-semibold my-1 text-4xl">
-                <AiOutlineCalendar />
-                <span className="ml-2">AeshManager</span>
-            </h2>
-            <div className="flex flex-row gap-20">
-            <ul className="flex flex-row justify-center items-center ">
+      <header className= "h-[100px]   bg-white shadow-md border fixed w-screen z-50 md:h-[70px] top-0">
+      <div className="w-full  py-2 px-2 ">
+      <div className="flex flex-col md:flex-row items-center justify-between">
+        <h2 onClick={scrollToTop} className="text-gray-600 cursor-pointer hover:text-black flex flex-row items-center justify-between font-semibold my-1 text-2xl lg:text-4xl">
+          <AiOutlineCalendar />
+          <span className="ml-2">AeshManager</span>
+        </h2>
+        <div className="flex flex-row md:gap-14 lg:gap-20">
+          <ul className="flex flex-row justify-center items-center ">
             <li>
               <ScrollLink
                 to="section1"
                 smooth={true}
                 duration={500}
                 offset={-70}
-                className="block cursor-pointer px-8 py-2 rounded-md text-gray-700 uppercase transition-all duration-300 ease-in-out relative overflow-hidden group"
+                className="block  hover:text-black cursor-pointer px-4 md:px-8  md:py-2 rounded-md text-gray-700 uppercase transition-all duration-300 ease-in-out relative overflow-hidden group"
                 activeClass="text-fad4d8"
               >
                 Fonctionnalités
-                <span className="absolute h-0.5 w-full bg-fad4d8 bottom-0 left-0 transform scale-x-0 transition-transform duration-300 ease-in-out group-hover:scale-x-100"></span>
+                <span className="hidden md:inline absolute h-0.5 w-full bg-fad4d8 bottom-0 left-0 transform scale-x-0 transition-transform duration-300 ease-in-out group-hover:scale-x-100"></span>
               </ScrollLink>
             </li>
             <li>
@@ -121,11 +121,11 @@ function Landing() {
                 smooth={true}
                 duration={500}
                 offset={-70}
-                className="block cursor-pointer px-8 py-2 rounded-md text-gray-700 uppercase transition-all duration-300 ease-in-out relative overflow-hidden group"
+                className="block cursor-pointer hover:text-black  px-4 lg:px-8  py-1 md:py-2 rounded-md text-gray-700 uppercase transition-all duration-300 ease-in-out relative overflow-hidden group"
                 activeClass="text-fad4d8"
               >
                 Tarifs
-                <span className="absolute h-0.5 w-full bg-fad4d8 bottom-0 left-0 transform scale-x-0 transition-transform duration-300 ease-in-out group-hover:scale-x-100"></span>
+                <span className="hidden md:inline absolute h-0.5 w-full bg-fad4d8 bottom-0 left-0 transform scale-x-0 transition-transform duration-300 ease-in-out group-hover:scale-x-100"></span>
               </ScrollLink>
             </li>
             <li>
@@ -134,19 +134,19 @@ function Landing() {
                 smooth={true}
                 duration={500}
                 offset={-70}
-                className="block cursor-pointer px-8 py-2 rounded-md text-gray-700 uppercase transition-all duration-300 ease-in-out relative overflow-hidden group"
+                className="block cursor-pointer  px-4 md:px-8  py-1 md:py-2 rounded-md text-gray-700 uppercase transition-all duration-300 ease-in-out relative overflow-hidden group hover:text-black"
                 activeClass="text-fad4d8"
               >
                 A propos
-                <span className="absolute h-0.5 w-full bg-fad4d8 bottom-0 left-0 transform scale-x-0 transition-transform duration-300 ease-in-out group-hover:scale-x-100"></span>
+                <span className="hidden md:inline absolute h-0.5 w-full bg-fad4d8 bottom-0 left-0 transform scale-x-0 transition-transform duration-300 ease-in-out group-hover:scale-x-100"></span>
               </ScrollLink>
             </li>
-          </ul>
-        </div>    
+            </ul>
+            </div>
             <div className="flex items-center">
               <button
-              className="drop-shadow-md bg-[#D4FAE3] hover:text-black hover:bg-[#D8FAD4] text-gray-700 font-bold pt-2 py-2 px-4 rounded-3xl border focus:outline-none focus:shadow-outline"
-              onClick={() => setModalIsOpen(true)}
+                className="drop-shadow-md bg-[#D4FAE3] hover:text-black hover:bg-[#D8FAD4] text-gray-700 font-bold py-1 mr-4  md:py-2 px-2 md:px-4 rounded-3xl border focus:outline-none focus:shadow-outline"
+                onClick={() => setModalIsOpen(true)}
               >
                 Se connecter
               </button>
@@ -155,8 +155,8 @@ function Landing() {
         </div>
       </header>
 
-      <main className="h-[38rem] pt-[70px] bg-gradient-to-r from-[#FAD4E8] via-pink-custom to-pink-custom flex flex-row items-center justify-center px-4 sm:px-6 lg:px-8 ">
-        <div className="w-[38rem] text-center flex flex-col justify-center items-center h-full  m-4 p-4">
+      <main className=" h-full lg:h-[38rem] pt-[70px] bg-gradient-to-r from-[#FAD4E8] via-pink-custom to-pink-custom flex flex-col lg:flex-row items-center justify-center mt-6 px-4 sm:px-6 md:px-8 ">
+        <div className="w-full lg:w-[38rem] text-center flex flex-col justify-center items-center h-full  m-4 p-4">
           <h2 className="text-2xl  mb-6">
           Simplifier vous la création  <strong>des plannings </strong> pour les <strong>Aesh</strong> et <strong>les enfants</strong>.
           </h2>
@@ -170,7 +170,7 @@ function Landing() {
           Essayer Gratuitement
         </button>
         </div>
-        <div className="w-[38rem] h-full  m-4 flex justify-center items-center" >
+        <div className="p-4 w-full lg:w-[38rem] h-full  m-4 flex justify-center items-center" >
         <img
               src="MockupAeshM.png"
               alt="Capture d'écran 1"
@@ -181,14 +181,14 @@ function Landing() {
 
 
       <Section id="section1" />
-      <div className="bg-slate-100    justify-start items-center flex flex-col p-4">     
+      <div className="bg-slate-100  pt-14  justify-start items-center flex flex-col p-4">     
          <h3 className="text-2xl font-semibold w-80 mb-6 text-center">
           Toutes les fonctionnalités dont vous avez besoin
         </h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4"> 
           <Feature
             icon="build"
-            title="Création d'école et des classes"
+            title="Création d'école et de classes"
             content="Créer de zéro votre école, les paramètres des créneaux horaires, les niveaux et les classes."
             color="blue"
           />
@@ -217,12 +217,12 @@ function Landing() {
       </div>
       <Section />
       <Section id="section2" />
-      <div className=" bg-white h-[30rem] text-lg text-justify items-center flex flex-col p-4 ">
+      <div className=" bg-white h-full lg:h-[30rem] mt-10 text-lg text-justify items-center flex flex-col m-4 p-4 ">
       <h3 className="text-2xl font-semibold mb-6 text-center">
       Tarifs :
     
     </h3>
-    <p className="w-[40rem]">
+    <p className="w-full lg:w-[40rem] p-4">
     Aesh Manager est gratuit pour l'ensemble des fonctionnalités de base.
     L'inscription est disponible uniquement sur demande.
     Pour demander un accès ou des fonctionnalités supplémentaires (autres gestions, import des données) veuillez remplir ce formulaire :
@@ -232,14 +232,11 @@ function Landing() {
     
     <Section/>
 
-      <section  id="section3" className="py-4 h-[35rem] bg-slate-100 px-4 sm:px-6 lg:px-8">
+      <section  id="section3" className="py-4 h-[35rem] bg-slate-100 px-4 sm:px-6 md:px-8">
       <h3 className="text-2xl font-semibold mb-6 text-center">
       A propos :
     </h3>
     <AboutMe/>
-
-
-
       </section>
     </div>
     
