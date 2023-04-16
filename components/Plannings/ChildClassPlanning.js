@@ -402,7 +402,7 @@ function ChildClassPlanning({
       
         </Col>
         <Col span={1}>
-          <div className=" h-full p-1 flex flex-col items-center justify-center text-gray-500 hover:text-black hover:bg-gray-200 ">
+          <div className=" h-full p-1 flex flex-col items-center justify-center text-gray-500 hover:text-black ">
             {isEditing ? (
               <AiOutlineSave
                 onClick={handleButtonClick}
@@ -417,7 +417,7 @@ function ChildClassPlanning({
           </div>
         </Col>
       </Row>
-        <div className=" h-full flex-shrink-0   text-l font-semibold">
+        <div className=" h-full flex-shrink-0 p-1  text-l font-semibold">
           <Row>
             <Col span={4}></Col>
             {weekDays.map((day) => (

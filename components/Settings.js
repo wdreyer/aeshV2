@@ -349,7 +349,7 @@ function formatData(data) {
   ];
 
   return (
-    <div className=" flex flex-col  items-center container mx-auto my-8">
+    <div className=" flex flex-col  items-center container mx-auto">
       <Form
         onFinish={handleSubmit}
         className="w-settings shadow-md p-6 flex flex-col  items-left bg-white rounded-lg"

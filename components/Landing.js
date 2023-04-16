@@ -9,8 +9,8 @@ import { motion } from 'framer-motion';
 import { animateScroll } from 'react-scroll';
 import { useInView } from 'react-intersection-observer';
 import Feature from "./Landing/Feature";
-
-
+import InvitForm from "./Landing/InvitForm";
+import AboutMe from './Landing/AboutMe'
 
 const auth = getAuth(app);
 
@@ -155,7 +155,7 @@ function Landing() {
         </div>
       </header>
 
-      <main className="h-[35rem] pt-[70px] bg-gradient-to-r from-[#FAD4E8] via-pink-custom to-pink-custom flex flex-row items-center justify-center px-4 sm:px-6 lg:px-8 ">
+      <main className="h-[38rem] pt-[70px] bg-gradient-to-r from-[#FAD4E8] via-pink-custom to-pink-custom flex flex-row items-center justify-center px-4 sm:px-6 lg:px-8 ">
         <div className="w-[38rem] text-center flex flex-col justify-center items-center h-full  m-4 p-4">
           <h2 className="text-2xl  mb-6">
           Simplifier vous la création  <strong>des plannings </strong> pour les <strong>Aesh</strong> et <strong>les enfants</strong>.
@@ -181,7 +181,7 @@ function Landing() {
 
 
       <Section id="section1" />
-      <div className="bg-slate-100 h-[35rem]  justify-start items-center flex flex-col p-4">     
+      <div className="bg-slate-100    justify-start items-center flex flex-col p-4">     
          <h3 className="text-2xl font-semibold w-80 mb-6 text-center">
           Toutes les fonctionnalités dont vous avez besoin
         </h3>
@@ -217,57 +217,29 @@ function Landing() {
       </div>
       <Section />
       <Section id="section2" />
-      <div className=" bg-white h-[30rem] flex flex-col p-4 ">
+      <div className=" bg-white h-[30rem] text-lg text-justify items-center flex flex-col p-4 ">
       <h3 className="text-2xl font-semibold mb-6 text-center">
       Tarifs :
+    
     </h3>
-    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-    <SectionImage
-    src="https://via.placeholder.com/300x200"
-    alt="Capture d'écran 1"
-    index={1}
-  />
-  <SectionImage
-    src="https://via.placeholder.com/300x200"
-    alt="Capture d'écran 2"
-    index={0}
-  />
-  <SectionImage
-    src="https://via.placeholder.com/300x200"
-    alt="Capture d'écran 3"
-    index={1}
-  />
+    <p className="w-[40rem]">
+    Aesh Manager est gratuit pour l'ensemble des fonctionnalités de base.
+    L'inscription est disponible uniquement sur demande.
+    Pour demander un accès ou des fonctionnalités supplémentaires (autres gestions, import des données) veuillez remplir ce formulaire :
+    </p>    
+    <InvitForm/>
     </div>
-    </div>
+    
     <Section/>
 
-      <section  id="section3" className="py-4 bg-slate-100 px-4 sm:px-6 lg:px-8">
+      <section  id="section3" className="py-4 h-[35rem] bg-slate-100 px-4 sm:px-6 lg:px-8">
       <h3 className="text-2xl font-semibold mb-6 text-center">
       A propos :
     </h3>
-    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-      <div className="bg-gray-200 rounded-lg p-4">
-        <img
-          src="https://via.placeholder.com/300x200"
-          alt="Capture d'écran 1"
-          className="rounded-lg w-full"
-        />
-      </div>
-      <div className="bg-gray-200 rounded-lg p-4">
-        <img
-          src="https://via.placeholder.com/300x200"
-          alt="Capture d'écran 2"
-          className="rounded-lg w-full"
-        />
-      </div>
-      <div className="bg-gray-200 rounded-lg p-4">
-        <img
-          src="https://via.placeholder.com/300x200"
-          alt="Capture d'écran 3"
-          className="rounded-lg w-full"
-        />
-      </div>
-    </div>
+    <AboutMe/>
+
+
+
       </section>
     </div>
     
@@ -313,13 +285,14 @@ function Landing() {
         </button>
       </div>
     </form>
+    {false && (
     <div className="pt-4 flex flex-col items-center justify-between text-sm">
       <Link href="/signUp">
         <a className="text-grey-500 hover:text-grey-900">
           Pas de compte ? Inscrivez-vous
         </a>
       </Link>
-    </div>
+    </div> )}
   </Modal>
 </>
   )}
