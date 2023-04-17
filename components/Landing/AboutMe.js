@@ -37,7 +37,7 @@ const AboutMe = ({ }) => {
   <h2 className="text-xl font-semibold  text-center" >
   AeshManager est propulsé par William</h2>
   <h2 className="text-xl font-semibold mb-6 text-center">
-  Retrouver le sur <a href='http://williamdev.fr'>http://williamdev.fr</a>
+  Retrouver moi à <a href="mailto:contact@williamdev.fr">contact@williamdev.fr</a>
   </h2>
   </p>
   <p className=" text-sm font-semibold mb-6 text-center">
