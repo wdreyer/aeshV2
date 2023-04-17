@@ -142,12 +142,12 @@ function ChildDashboard() {
 
   return (
     <>
-    <Row className=" p-2 shadow-md  text-lg font-bold">
-    <Col span={4}><div className="flex items-center border-r pl-2">Prénom</div></Col>
-    <Col span={4}><div className="flex items-center border-r pl-2">Niveau</div></Col>
-    <Col span={4}><div className="flex items-center border-r pl-2">Prof</div></Col>
-    <Col span={5}><div className="flex items-center border-r pl-2">Différence</div></Col>
-    <Col span={7}  className=" pl-2">Planning et Options</Col>
+    <Row className=" p-1 lg:p-2 shadow-md  text-lg font-bold">
+    <Col span={5}><div className="flex items-center border-r pl-1 lg:pl-2">Prénom</div></Col>
+    <Col span={4}><div className="flex items-center border-r pl-1 lg:pl-2">Niveau</div></Col>
+    <Col span={4}><div className="flex items-center border-r pl-1 lg:pl-2">Prof</div></Col>
+    <Col span={4}><div className="flex items-center border-r pl-1 lg:pl-2">Diff.</div></Col>
+    <Col span={7}  className="pl-1 lg:pl-2">Planning et Options</Col>
   </Row>
   {isLoading ? (
     <div className="flex justify-center items-center"

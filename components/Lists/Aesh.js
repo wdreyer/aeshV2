@@ -87,31 +87,39 @@ function Aesh({planning,onSave, idAesh, firstName, level, teacher, hours,schoolI
   return (
     <>
       <div
-      className={`border p-2 shadow-md text-l font-semibold bg-opacity-30 backdrop-blur-md ${getBgClass(subtractTime(hoursReels,hours))}`}
+      className={`border p-1 lg:p-2 shadow-md text-l font-semibold bg-opacity-30 backdrop-blur-md ${getBgClass(subtractTime(hoursReels,hours))}`}
       >
         <Row>
-          <Col span={4} className="flex items-center border-r pl-2">
-            {firstName}
+          <Col span={option === "aesh" ? 4 : 5} className="flex items-center border-r pl-1 lg:pl-2">
+                  <span className="w-full break-words"> 
+          {firstName}
+          </span>
           </Col>
           <Col
             span={option === "aesh" ? 5 : 4}
-            className="flex items-center text-center px-2 border-r pl-2"
+            className="flex items-center border-r pl-1 lg:pl-2"
           >
+                  <span className="w-full break-words">
             {hours}
+            </span>
           </Col>
           <Col
             span={option === "aesh" ? 5 : 4}
-            className="flex items-center text-center px-2 border-r pl-2"
+            className="flex items-center pl-1 lg:pl-2  px-1 border-r"
           >
+                  <span className="w-full break-words">
            {hoursReels}
+           </span>
           </Col>
           <Col
             span={option === "aesh" ? 5 : 4}
-            className="flex items-center text-center px-2 border-r pl-2"
+            className="flex items-center pl-1 lg:pl-2 px-1 border-r"
           >
+                  <span className="w-full break-words">
            {subtractTime(hoursReels,hours)}
+           </span>
           </Col>
-          <Col span={option === "aesh" ? 5 : 7} className="flex-row text-center text-3xl ">
+          <Col span={option === "aesh" ? 5 : 7} className="flex-row pl-1 lg:pl-2 text-3xl ">
             <AiOutlineCalendar
               onClick={showModal}
               className="inline hover:text-black text-gray-600 cursor-pointer mr-2"

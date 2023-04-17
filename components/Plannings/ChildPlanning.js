@@ -283,7 +283,7 @@ function ChildPlanning({
   
 
   return (
-    <>
+    <div className="!p-0 !m-0">
       <div className="absolute top-5 rounded p-1 text-gray-500 hover:text-black hover:bg-gray-200  right-9">
         {isEditing ? (
           <AiOutlineSave
@@ -306,21 +306,21 @@ function ChildPlanning({
           startMinutes,
         }}
         layout="vertical"
-        className="w-full flex p-3"
+        className="w-full flex flex-col lg:flex-row p-0 lg:p-3"
         form={form}
       >
-        <div className="w-3/4 h-full flex-shrink-0 border bg-gray-100 backdrop-blur-md rounded shadow-md  text-l font-semibold">
+        <div className="w-full lg:w-3/4 h-full flex-col lg:flex-shrink-0 border bg-gray-100 backdrop-blur-md rounded shadow-md  text-l font-semibold">
           <Row>
             <Col span={4}></Col>
             {weekDays.map((day) => (
-              <Col className="border p-1" key={day} span={5}>
+              <Col className="border pl-1 py-1 lg:p-2" key={day} span={5}>
                 {day}
               </Col>
             ))}
           </Row>
           {timeSlots.map((timeSlot) => (
             <Row key={timeSlot}>
-              <Col className="border p-1" span={4}>
+              <Col className="border pl-0.5 py-1 lg:p-2" span={4}>
                 {timeSlot}
               </Col>
               {weekDays.map((day) => (
@@ -336,6 +336,7 @@ function ChildPlanning({
                     >
                       <Select
                         allowClear
+                        dropdownMatchSelectWidth={false}
                         style={{ width: "100%" }}
                         labelInValue
                         value={
@@ -381,7 +382,7 @@ function ChildPlanning({
           ))}
         </div>
 
-        <div className="w-1/4 mx-2 bg-gray-100 backdrop-blur-md rounded shadow-md text-l font-semibold flex flex-col">
+        <div className=" w-full lg:w-1/4 pt-1 lg:p-0 lg:mx-2 bg-gray-100 backdrop-blur-md rounded shadow-md text-l font-semibold flex flex-col">
           <div className="border p-1 flex flex-row justify-between">
             <span>Prénom : </span>
             {isEditing ? (
@@ -439,17 +440,17 @@ function ChildPlanning({
 
 
           {isEditing ? (
-            <>
+            <div >
               <span>Heures accordées :</span>
               <div className="mb-0 flex flex-row">
                 <Form.Item className="mb-0" name="startHours">
-                  <InputNumber min={0} max={59} placeholder="HH" />
+                  <InputNumber min={0} max={59} placeholder="HH"  />
                 </Form.Item>
                 <Form.Item className="mb-0" name="startMinutes">
                   <InputNumber min={0} max={45} step={15} placeholder="MM" />
                 </Form.Item>
               </div>
-            </>
+            </div>
           ) : (
             <div className="border p-1 flex flex-row justify-between">
               
@@ -470,7 +471,7 @@ function ChildPlanning({
           </div>
         </div>
       </Form>
-    </>
+    </div>
   );
 }
 

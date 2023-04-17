@@ -59,40 +59,40 @@ function Header() {
 
   return (
     < >
-    <header className=" flex justify-between items-center p-2 bg-opacity-60 bg-[#FAD4D8]">
-    <div className="flex mt-auto ">  
-    <h2 className="text-gray-800 font-semibold text-4xl cursor-pointer">
-    <Link href="/">
-        <span className="inline-flex items-center">
-          <AiOutlineCalendar />
-          <span className="ml-2">AeshManager</span>
-        </span>
+    <header className="flex justify-between items-center p-2 bg-opacity-60 bg-[#FAD4D8]">
+    <div className="flex mt-auto">
+      <h2 className="text-xl md:text-2xl lg:text-4xl font-semibold text-gray-800 cursor-pointer">
+        <Link href="/">
+          <span className="inline-flex items-center">
+            <AiOutlineCalendar />
+            <div className="">
+            <span className="ml-2 inline">Aesh</span>
+            <span className="hidden lg:inline">Manager</span>
+            </div>
+          </span>
         </Link>
       </h2>
-      <span className="flex ml-2 items-end ">
-      <span className="ml-2">{schoolName}</span>
-    </span>
+      <span className="flex items-center ml-2 lg:items-end">
+        <span className="text-sm lg:text-base ml-2">{schoolName}</span>
+      </span>
     </div>
-    
-
-      <div className="flex items-center">
-       
-        <Link href="/reglages">
-
-        <a className="text-gray-600 font-semibold hover:text-gray-900 py-2 px-4 rounded inline-flex items-center">
-      < AiOutlineSetting className="mr-2"/> Réglages
+  
+    <div className="flex items-center">
+      <Link href="/reglages">
+        <a className="text-sm lg:text-base text-gray-600 font-semibold hover:text-gray-900 mr-2 lg:py-2 lg:px-4 rounded inline-flex items-center">
+          <AiOutlineSetting className="mr-1 lg:mr-2" /> Réglages
         </a>
       </Link>
-        <button
-          onClick={handleSignOut}
-          className=" text-gray-600 font-semibold hover:text-gray-900 py-2 px-4 rounded inline-flex items-center"
-        >
-          <AiOutlinePoweroff className="mr-2" />
-          Déconnexion
-        </button>
-      </div>
-      
-    </header>
+      <button
+        onClick={handleSignOut}
+        className="text-sm lg:text-base text-gray-600 font-semibold hover:text-gray-900 lg:py-2 lg:px-4 rounded inline-flex items-center"
+      >
+        <AiOutlinePoweroff className="mr-1 lg:mr-2" />
+        Déconnexion
+      </button>
+    </div>
+  </header>
+  
     <nav className="  w-100 min-h-0 border  border-gray-100">
     <ul className="flex flex-row justify-center border items-center shadow-2xl">
       <li>

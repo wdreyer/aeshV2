@@ -194,22 +194,27 @@ function Child({
   return (
     <>
       <div
-        className={`border p-2 shadow-md text-l font-semibold bg-opacity-30 backdrop-blur-md ${getBgClass(
+        className={`border p-1 lg:p-2 shadow-md text-l font-semibold bg-opacity-30 backdrop-blur-md ${getBgClass(
           subtractTime(hoursReels, hours)
         )}`}
       >
         <Row>
-          <Col span={4} className="flex items-center border-r pl-2">
-            {firstName}
-          </Col>
+        <Col span={option === "children" ? 4 : 5} className="flex items-center pr-1 border-r lg:pl-2">
+        <span className="w-full break-words">
+    {firstName}
+  </span>
+</Col>
           <Col
             span={option === "children" ? 3 : 4}
             className="flex items-center border-r pl-2"
           >
+          <span className="w-full break-words">
             {level}
+            </span>
           </Col>
           <Col span={4} className="flex items-center border-r pl-2">
-            <div>{teacher}</div>
+          <span className="w-full break-words">
+          {teacher}</span>
           </Col>
 
           {option === "children" && (
@@ -224,20 +229,24 @@ function Child({
                 span={3}
                 className="flex items-center text-center px-2 border-r pl-2"
               >
+              <span className="w-full break-words">
                 {hoursReels}
+                </span>
               </Col>
             </>
           )}
 
           <Col
-            span={option === "children" ? 3 : 5}
-            className="flex items-center text-center px-2 border-r pl-2"
+            span={option === "children" ? 3 : 4}
+            className="flex items-center border-r pl-2"
           >
+          <span className="w-full break-words">
             {subtractTime(hoursReels, hours)}
+            </span>
           </Col>
           <Col
             span={option === "children" ? 3 : 7}
-            className="flex-row text-center text-3xl "
+            className="flex-row  text-3xl pl-2 "
           >
             <AiOutlineCalendar
               onClick={showModal}
@@ -258,7 +267,14 @@ function Child({
         onCancel={handleCancel}
         footer={null}
         width={900}
-        open={isModalOpen}
+        open={isModalOpen}     
+        wrapClassName={{
+          padding: '1rem',
+          '@media (min-width: 1024px)': {
+            padding: '2rem',
+          },
+        }}
+        
       >
         {isLoading ? (
           <div
@@ -269,6 +285,7 @@ function Child({
           </div>
         ) : (
           <ChildPlanning
+          
             {...{
               onSave,
               hoursReels,

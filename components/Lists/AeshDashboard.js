@@ -141,12 +141,12 @@ function AeshDashboard() {
 
   return (
     <>
-    <Row className=" p-2 shadow-md  text-lg font-bold">
-      <Col span={4}><div className="flex items-center border-r pl-2"><strong>Prénom</strong></div></Col>
-      <Col span={4}><div className="flex items-center border-r pl-2"><strong>Heures A</strong></div></Col>
-      <Col span={4}><div className="flex items-center border-r pl-2"><strong>Heures R</strong></div></Col>
-      <Col span={5}><div className="flex items-center border-r pl-2"><strong>Différence</strong></div></Col>
-      <Col span={7}  className=" pl-2"><strong>Planning et Options</strong></Col>
+    <Row className="  shadow-md  text-lg font-bold">
+      <Col span={5}><div className="flex items-center border-r pl-2">Prénom</div></Col>
+      <Col span={4}><div className="flex items-center border-r pl-1">Heures acc.</div></Col>
+      <Col span={4}><div className="flex items-center border-r pl-1">Heures Réelles</div></Col>
+      <Col span={4}><div className="flex items-center border-r pl-1 ">Diff.</div></Col>
+      <Col span={7}  className=" pl-1">Planning et Options</Col>
     </Row>
     {isLoading ? (
       <div className="flex justify-center items-center "
