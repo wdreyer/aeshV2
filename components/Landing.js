@@ -203,7 +203,7 @@ function Landing() {
           <Feature
             icon="edit"
             title="Edition des plannings"
-            content="Assigner des Aesh ou Enfants à chaque créneau horaire et voyez l'évolution en temps réel des plannings dépendants."
+            content="Assigner des Aesh ou Enfants à chaque créneau horaire et voyez l'évolution en temps réel des plannings inter-dépendants."
             color="blue"
           />
 

@@ -115,7 +115,7 @@ function Home() {
     <div className="border w-full lg:w-2/5 flex flex-col rounded py-2  justify-center text-lg font-semibold  shadow-md">
     <span className="text-center text-xl mb-2" > Statistiques Aesh : </span>
     <div className=" rounded mb-2 text-m  font-semibold  flex flex-col" >
-    <div className="flex flex-row border   font-semibold p-2 justify-between"><span >Nbre d'enfants :</span><span>{aeshData.total}</span></div>
+    <div className="flex flex-row border   font-semibold p-2 justify-between"><span >Nbre d'Aeshs :</span><span>{aeshData.total}</span></div>
     <div className="flex flex-row border  font-semibold p-2 justify-between" > <span>  Total Contrats:</span><span>{aeshData.hours}</span></div>
     <div className="flex flex-row border font-semibold p-2 justify-between"><span  >Heures Réelles :</span><span>{aeshData.hoursReels}</span></div>
     <div className="flex flex-row border   font-semibold p-2 justify-between" ><span >Différence :</span><span>{aeshData.difference}</span></div>
