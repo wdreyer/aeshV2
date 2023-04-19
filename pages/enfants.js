@@ -114,8 +114,6 @@ function childrenPage() {
 
       const sortedChildrenData = children
           .sort((a, b) => convertToMinutes(subtractTime(a.hoursReels,a.hours)) - convertToMinutes(subtractTime(b.hoursReels,b.hours)))
-         
-
       setIsLoading(false);
       setChildrenData(sortedChildrenData);
     }
@@ -168,13 +166,13 @@ function childrenPage() {
     <>
     <div className=" border rounded mb-2 text-lg font-semibold">
     <Row className=" p-2 shadow-md  text-lg font-bold">
-      <Col span={4}><div className="flex items-center border-r pl-2">Prénom</div></Col>
-      <Col span={3}><div className="flex items-center border-r pl-2">Niveau</div></Col>
-      <Col span={4}><div className="flex items-center border-r pl-2">Prof</div></Col>
-      <Col span={3}><div className="flex items-center border-r pl-2">Heures accordées</div></Col>
-      <Col span={3}><div className="flex items-center border-r pl-2">Heures Réelles</div></Col>
-      <Col span={3}><div className="flex items-center border-r pl-2">Différence</div></Col>
-      <Col span={4}  className=" pl-2">Planning et Options</Col>
+    <Col span={4}><div className="flex items-center border-r pl-0.5 lg:px-2"><span className="w-full break-words">Prénom</span></div></Col>
+    <Col span={3}><div className="flex items-center border-r pl-0.5 lg:px-2"><span className="w-full break-words">Niveau</span></div></Col>
+    <Col span={4}><div className="flex items-center border-r pl-0.5 lg:px-2"><span className="w-full break-words">Prof</span></div></Col>
+    <Col span={3}><div className="flex items-center border-r pl-0.5 lg:px-2"><span className="w-full break-words">Heures <span className="inline md:hidden">Acc.</span><span className=" hidden md:inline">accordées</span></span></div></Col>
+    <Col span={3}><div className="flex items-center border-r pl-0.5 lg:px-2"><span className="w-full break-words">Heures Réelles</span></div></Col>
+    <Col span={3}><div className="flex items-center border-r pl-0.5 lg:px-2"><span className="w-full break-words"><span className="inline md:hidden">Diff.</span><span className=" hidden md:inline">Différence</span></span></div></Col>
+      <Col span={4}  className=" pl-2">Planning <span className=" hidden md:inline">&</span> Options</Col>
     </Row>
     {isLoading ? (
       <div className="flex justify-center items-center "
@@ -192,7 +190,7 @@ function childrenPage() {
   onOk={handleOk}
   onCancel={handleCancel}
   footer={null}
-  width={900}
+  width={700}
   open={isModalOpen}
 
 >

@@ -88,7 +88,7 @@ function ChildPlanning({
         form.setFieldsValue({ teacher: "" });
       }
     }
-  }, [levelSelected, levelsData]);
+  }, [levelSelected]);
 
   useEffect(() => {
     fetchLevelsData();
@@ -382,7 +382,7 @@ function ChildPlanning({
           ))}
         </div>
 
-        <div className=" w-full lg:w-1/4 pt-1 lg:p-0 lg:mx-2 bg-gray-100 backdrop-blur-md rounded shadow-md text-l font-semibold flex flex-col">
+        <div className=" w-full lg:w-1/4 mt-3 lg:mt-1 lg:p-0 lg:mx-2 bg-gray-100 backdrop-blur-md rounded shadow-md text-l font-semibold flex flex-col">
           <div className="border p-1 flex flex-row justify-between">
             <span>Prénom : </span>
             {isEditing ? (
@@ -438,10 +438,10 @@ function ChildPlanning({
           )}
         </div>
 
-
+        
           {isEditing ? (
-            <div >
-              <span>Heures accordées :</span>
+            <div className="flex flex-row p-1 border lg:flex-col justify-between" >   
+            <span>Heures accordées :</span>           
               <div className="mb-0 flex flex-row">
                 <Form.Item className="mb-0" name="startHours">
                   <InputNumber min={0} max={59} placeholder="HH"  />
@@ -453,8 +453,7 @@ function ChildPlanning({
             </div>
           ) : (
             <div className="border p-1 flex flex-row justify-between">
-              
-              <span>Heures accordées : </span>
+            <span>Heures accordées :</span>
               <span>{childData.hours}</span>
             </div>
           )}

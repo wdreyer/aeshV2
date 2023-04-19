@@ -79,7 +79,7 @@ function ChildClassPlanning({
         form.setFieldsValue({ teacher: "" });
       }
     }
-  }, [levelSelected, levelsData]);
+  }, [levelSelected]);
 
   useEffect(() => {
     fetchLevelsData();
@@ -217,7 +217,7 @@ function ChildClassPlanning({
         firstName: formValues.firstName,
         level: formValues.level,
         teacher: formValues.teacher,
-        hours: `${formValues.startHours}:${String(
+        hours: `${formValues.startHours.padStart(2, "0")}:${String(
           formValues.startMinutes
         ).padStart(2, "0")}`,
       });
@@ -295,7 +295,7 @@ function ChildClassPlanning({
 
 
   return (
-    <div  className="w-planning m-3  backdrop-blur-md rounded-lg shadow-lg">
+    <div  className="w-planning m-2  backdrop-blur-md rounded-lg shadow-lg">
     <Form
     onFinish={onFinish}
     initialValues={{
@@ -307,9 +307,9 @@ function ChildClassPlanning({
     layout="vertical"
     form={form}
   >
-  <Row className={`p-1 mb-2  text-l font-semibold ${getBgClass(subtractTime(hoursReels, hours))}`}>
-  <Col span={5}>
-    <div className=" p-1 flex flex-col items-center justify-between">
+  <Row className={`p-0.5 mb-2 border rounded-t-lg  text-l font-semibold ${getBgClass(subtractTime(hoursReels, hours))}`}>
+  <Col span={4}>
+    <div className="p-0.5 border-r border-gray-300 flex flex-col justify-between">
       <span>Prénom : </span>
       {isEditing ? (
         <Form.Item
@@ -325,8 +325,8 @@ function ChildClassPlanning({
       )}
     </div>
   </Col>
-  <Col span={3}>
-    <div className=" p-1 flex flex-col items-center justify-between">
+  <Col span={4}>
+    <div className="p-0.5 border-r border-gray-300 flex flex-col">
     <span>Classe : </span>
           {isEditing ? (
             <Form.Item
@@ -344,16 +344,16 @@ function ChildClassPlanning({
     </div>
   </Col>
   <Col span={4}>
-    <div className=" p-1 flex flex-col items-center justify-between">
+    <div className="p-0.5 border-r border-gray-300 flex flex-col">
     <span>Prof : </span>
           {isEditing ? (
             <Form.Item
             defaultValue={childData.teacher}
               rules={[{ required: true, message: "Champ obligatoire" }]}
-              className="mb-0 ml-3" name="teacher">
+              className="mb-0" name="teacher">
               <Select
                 value={teacherSelected}
-                style={{ width: "80px" }}
+                style={{ width: "100%" }}
                 dropdownMatchSelectWidth={false}
                 onChange={(value) => setTeacherSelected(value)}
               >
@@ -368,16 +368,16 @@ function ChildClassPlanning({
     </div>
   </Col>
   <Col span={5}>
-    <div className="  p-1 flex flex-col items-center justify-between">
-      <span>H. acc. :</span>
+    <div className="p-0.5 border-r border-gray-300 flex flex-col">
+      <span>Heures acc. :</span>
       {isEditing ? (
         <>
           <div className="mb-0 flex flex-row items-center ">
             <Form.Item  className="mb-0" name="startHours">
-              <InputNumber style={{ width: "40px" }} min={0} max={59} placeholder="HH" />
+              <InputNumber  className="w-11" min={0} max={59} placeholder="HH" />
             </Form.Item>
             <Form.Item className="mb-0" name="startMinutes">
-              <InputNumber style={{ width: "40px" }} min={0} max={45} step={15} placeholder="MM" />
+              <InputNumber className="w-11" min={0} max={45} step={15} placeholder="MM" />
             </Form.Item>
           </div>
         </>
@@ -389,13 +389,13 @@ function ChildClassPlanning({
     </div>
   </Col>
   <Col span={3}>
-    <div className=" h-full p-1 flex flex-col items-center ">
+    <div className="p-0.5 border-r border-gray-300 flex flex-col">
       <span>H. Rée: </span>
       <span>{childData.hoursReels}</span>
     </div>
   </Col>
   <Col span={3}>
-    <div  className={` p-1 mr-1  text-l font-semibold bg-opacity-20 backdrop-blur-md `}>
+    <div  className="p-0.5 border-r border-gray-300 flex flex-col">
       <span>Diff. : </span>
       <span >{subtractTime(hoursReels, hours)}</span>
       </div>
@@ -417,7 +417,7 @@ function ChildClassPlanning({
           </div>
         </Col>
       </Row>
-        <div className=" h-full flex-shrink-0 p-1  text-l font-semibold">
+        <div className="h-full flex-shrink-0 p-1  text-l font-semibold">
           <Row>
             <Col span={4}></Col>
             {weekDays.map((day) => (

@@ -37,13 +37,12 @@ const AboutMe = ({ }) => {
   <h2 className="text-xl font-semibold  text-center" >
   AeshManager est propulsé par William</h2>
   <h2 className="text-xl font-semibold mb-6 text-center">
-  Retrouver moi à <a href="mailto:contact@williamdev.fr">contact@williamdev.fr</a>
+  Envoyez moi un  à <a href="mailto:contact@williamdev.fr">contact@williamdev.fr</a>
   </h2>
   </p>
   <p className=" text-sm font-semibold mb-6 text-center">
   Disponible pour l'ensemble de vos projets web et mobile. Je vous garantis un résultat efficace, rapide et optimisé.
   </p>
-
   </motion.div>
   );
 };

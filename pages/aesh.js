@@ -152,11 +152,11 @@ function aeshPage() {
     <>
     <div className=" border rounded mb-2 text-lg font-semibold">
     <Row className=" p-2 shadow-md  text-lg font-bold">
-      <Col span={4}><div className="flex items-center border-r pl-2"><strong>Prénom</strong></div></Col>
-      <Col span={5}><div className="flex items-center border-r pl-2"><strong>Heures accordés</strong></div></Col>
-      <Col span={5}><div className="flex items-center border-r pl-2"><strong>Heures Réelles</strong></div></Col>
-      <Col span={5}><div className="flex items-center border-r pl-2"><strong>Différence</strong></div></Col>
-      <Col span={5}  className=" pl-2"><strong>Planning et Options</strong></Col>
+      <Col span={4}><div className="flex items-center border-r pl-2">Prénom</div></Col>
+      <Col span={5}><div className="flex items-center border-r pl-2">Heures accordés</div></Col>
+      <Col span={5}><div className="flex items-center border-r pl-2">Heures Réelles</div></Col>
+      <Col span={5}><div className="flex items-center border-r pl-2">Différence</div></Col>
+      <Col span={5}  className=" pl-2">Planning et Options</Col>
     </Row>
     {isLoading ? (
       <div className="flex justify-center items-center "

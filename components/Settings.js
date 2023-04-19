@@ -352,7 +352,7 @@ function formatData(data) {
     <div className=" flex flex-col  items-center container mx-auto">
       <Form
         onFinish={handleSubmit}
-        className="w-settings shadow-md p-6 flex flex-col  items-left bg-white rounded-lg"
+        className=" border shadow-md px-2  flex flex-col  items-left bg-white rounded-lg"
         form={form}
       >
         <div className="-md p-6 ">

@@ -83,14 +83,17 @@ function AddAesh({onSave}) {
     <div >
         <h2 className="text-xl font-bold mb-4">Ajout des aeshs :</h2>
 
-        <Form onFinish={handleSubmit} form={form}>
-          <Form.Item label="Nombre d'aeshs :">
-            <InputNumber
-              min={0}
-              value={numaesh}
-              onChange={handleNumaeshChange}
-            />
-          </Form.Item>
+        <Form onFinish={handleSubmit} form={form} layout="horizontal">
+        <div className="flex flex-nowrap ">
+      <span className="mr-4 mt-1">Nombre dʼAeshs :</span>
+      <Form.Item className="flex-shrink-0">
+        <InputNumber
+          min={0}
+          value={numaesh}
+          onChange={handleNumaeshChange}
+        />
+      </Form.Item>
+    </div>
           {aeshForms.map((aesh, index) => (
             <div key={index} className="bg-gray-100 p-0.5 rounded-md mb-1">
               <Row align="top">

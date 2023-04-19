@@ -69,6 +69,7 @@ function AddChild({ onSave }) {
         firstName: child.firstName,
         level: child.level || "",
         teacher: child.teacher || "",
+        hoursReels: "00:00",
         hours: `${String(
           form.getFieldValue(`time${index}.startHour`) || "00"
         ).padStart(2, "0")}:${String(
@@ -80,9 +81,9 @@ function AddChild({ onSave }) {
       childrenData.forEach(async (child) => {
         await addDoc(collection(db, `schools/${schoolDoc.id}/children`), child);
       });
-      setChildForms([])
-      setNumChildren(0)
-      form.resetFields()
+      setChildForms([]);
+      setNumChildren(0);
+      form.resetFields();
       onSave();
     } catch (error) {
       console.error("Erreur lors de lajout des enfants :", error.message);
@@ -90,19 +91,22 @@ function AddChild({ onSave }) {
   };
 
   return (
-    <div>
+    <div >
       <h2 className="text-xl font-bold mb-4">Ajout des enfants :</h2>
 
-      <Form onFinish={handleSubmit} form={form}>
-        <Form.Item label="Nombre d'enfants :">
-          <InputNumber
-            min={0}
-            value={numChildren}
-            onChange={handleNumChildrenChange}
-          />
-        </Form.Item>
+      <Form onFinish={handleSubmit} form={form} layout="horizontal">
+      <div className="flex flex-nowrap ">
+      <span className="mr-4 mt-1">Nombre dʼenfants :</span>
+      <Form.Item className="flex-shrink-0">
+        <InputNumber
+          min={0}
+          value={numChildren}
+          onChange={handleNumChildrenChange}
+        />
+      </Form.Item>
+    </div>
         {childForms.map((child, index) => (
-          <div key={index} className="bg-gray-100 p-0.5 rounded-md mb-1">
+          <div key={index} className="bg-gray-100 p-0.5 rounded-md mb-1 border shadow">
             <Row align="top">
               <Col className="mb-0" span={6}>
                 <Form.Item
@@ -134,8 +138,8 @@ function AddChild({ onSave }) {
                   className="mb-2"
                 >
                   <Select
-                  dropdownMatchSelectWidth={false}
-                  style={{ width: "90%" }}
+                    dropdownMatchSelectWidth={false}
+                    style={{ width: "90%" }}
                     onChange={(value) =>
                       handleChildFormChange(index, "level", value)
                     }
@@ -148,7 +152,7 @@ function AddChild({ onSave }) {
                   </Select>
                 </Form.Item>
               </Col>
-              <Col className="mb-0" span={4}>
+              <Col className="mb-0" span={6}>
                 <Form.Item
                   labelCol={{ span: 24 }}
                   wrapperCol={{ span: 24 }}
@@ -157,7 +161,7 @@ function AddChild({ onSave }) {
                   name={`childForms[${index}].teacher`}
                 >
                   <Select
-                  dropdownMatchSelectWidth={false}
+                    dropdownMatchSelectWidth={false}
                     style={{ width: "90%" }}
                     onChange={(value) =>
                       handleChildFormChange(index, "teacher", value)
@@ -175,7 +179,7 @@ function AddChild({ onSave }) {
                   </Select>
                 </Form.Item>
               </Col>
-              <Col className="mb-0" span={10}>
+              <Col className="mb-0" span={8}>
                 <Form.Item
                   initialValue={0}
                   labelCol={{ span: 24 }}
@@ -188,7 +192,7 @@ function AddChild({ onSave }) {
                     name={`time${index}.startHour`}
                     noStyle
                   >
-                    <InputNumber min={0} max={50} placeholder="HH" />
+                    <InputNumber className="w-2/5" min={0} max={50} placeholder="HH" />
                   </Form.Item>
                   <span className="mx-1">:</span>
                   <Form.Item
@@ -196,7 +200,7 @@ function AddChild({ onSave }) {
                     name={`time${index}.startMinute`}
                     noStyle
                   >
-                    <InputNumber min={0} max={59} step={5} placeholder="MM" />
+                    <InputNumber className="w-2/5" min={0} max={59} step={5} placeholder="MM" />
                   </Form.Item>
                 </Form.Item>
               </Col>

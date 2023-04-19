@@ -260,10 +260,10 @@ function AeshPlanning({
           startMinutes,
         }}
         layout="vertical"
-        className="w-full flex p-3"
+        className="w-full flex flex-col lg:flex-row p-0 lg:p-3"
         form={form}
       >
-        <div className="w-3/4 h-full flex-shrink-0 border bg-gray-100 backdrop-blur-md rounded shadow-md  text-l font-semibold">
+        <div className="w-full lg:w-3/4 h-full flex-col lg:flex-shrink-0 border bg-gray-100 backdrop-blur-md rounded shadow-md  text-l font-semibold">
           <Row>
             <Col span={4}></Col>
             {weekDays.map((day) => (
@@ -290,6 +290,7 @@ function AeshPlanning({
                     >
                       <Select
                       labelInValue
+                      dropdownMatchSelectWidth={false}
                         allowClear
                         style={{ width: "100%" }}
                         value={
@@ -345,7 +346,7 @@ function AeshPlanning({
           ))}
         </div>
 
-        <div className="w-1/4 mx-2 bg-gray-100 backdrop-blur-md rounded shadow-md text-l font-semibold flex flex-col">
+        <div className=" w-full lg:w-1/4 mt-3 lg:mt-1 lg:p-0 lg:mx-2 bg-gray-100 backdrop-blur-md rounded shadow-md text-l font-semibold flex flex-col">
           <div className="border p-1 flex flex-row justify-between">
             <span>Prénom : </span>
             {isEditing ? (
@@ -362,8 +363,8 @@ function AeshPlanning({
             )}
           </div>
           {isEditing ? (
-            <>
-              <span>Contrat :</span>
+            <div className="flex flex-row p-1 border lg:flex-col justify-between">
+              <span className=" p-1 flex flex-row justify-between">Contrat :</span>
               <div className="mb-0 flex flex-row">
                 <Form.Item className="mb-0" name="startHours">
                   <InputNumber min={0} max={59} placeholder="HH" />
@@ -372,7 +373,7 @@ function AeshPlanning({
                   <InputNumber min={0} max={45} step={15} placeholder="MM" />
                 </Form.Item>
               </div>
-            </>
+            </div>
           ) : (
             <div className="border p-1 flex flex-row justify-between">
               <span>Contrat : </span>

@@ -221,13 +221,15 @@ function Child({
             <>
               <Col
                 span={3}
-                className="flex items-center text-center px-2 border-r pl-2"
+                className="flex items-center px-2 border-r pl-2"
               >
+              <span className="w-full break-words">
                 {hours}
+                </span>
               </Col>
               <Col
                 span={3}
-                className="flex items-center text-center px-2 border-r pl-2"
+                className="flex items-center  px-2 border-r pl-2"
               >
               <span className="w-full break-words">
                 {hoursReels}
