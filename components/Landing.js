@@ -158,11 +158,10 @@ function Landing() {
       <main className=" h-full lg:h-[38rem] pt-[70px] bg-gradient-to-r from-[#FAD4E8] via-pink-custom to-pink-custom flex flex-col lg:flex-row items-center justify-center mt-6 px-4 sm:px-6 md:px-8 ">
         <div className="w-full lg:w-[38rem] text-center flex flex-col justify-center items-center h-full  m-4 p-4">
           <h2 className="text-2xl  mb-6">
-          Simplifier vous la création  <strong>des plannings </strong> pour les <strong>Aesh</strong> et <strong>les enfants</strong>.
+          Simplifiez la création des plannings pour les <strong>AESH</strong> et les <strong>enfants</strong>.
           </h2>
           <p className="text-lg mb-8">
-            AeshManager est une solution en ligne pour les directeurs d'école et les responsables de l'éducation. En quelques clics, vous pouvez assigner des AESH aux élèves et inversement, vous pouvez calculer leurs heures réelles ainsi que la différence avec leurs contrats ou leurs heures accordées.
-          </p>
+          AeshManager est une solution en ligne destinée aux directeurs d'école et aux responsables de l'éducation. En quelques clics, vous pouvez assigner des AESH aux élèves et vice versa, calculer leurs heures réelles ainsi que la différence avec leurs contrats ou leurs heures accordées.          </p>
           <button
           className="drop-shadow-md bg-[#D4FAE3] hover:text-black hover:bg-[#D8FAD4] text-gray-700 font-bold pt-2 py-2 px-4 rounded-3xl border focus:outline-none focus:shadow-outline"
           onClick={() => testForm()}
@@ -183,26 +182,26 @@ function Landing() {
       <Section id="section1" />
       <div className="bg-slate-100  pt-14  justify-start items-center flex flex-col p-4">     
          <h3 className="text-2xl font-semibold w-80 mb-6 text-center">
-          Toutes les fonctionnalités dont vous avez besoin
-        </h3>
+         Toutes les fonctionnalités dont vous avez besoin
+         </h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4"> 
           <Feature
             icon="build"
             title="Création d'école et de classes"
-            content="Créer de zéro votre école, les paramètres des créneaux horaires, les niveaux et les classes."
+            content="Créez votre école à partir de zéro, paramétrez les créneaux horaires, les niveaux et les classes.."
             color="blue"
           />
 
           <Feature
             icon="usergroup"
             title="Ajout d'enfants et d'Aesh"
-            content="Ajouter un nombre illimité d'enfants et d'Aeshs et accordez-leur les heures qu'ils ont besoin ou les heures de leurs contrats."
+            content="Ajoutez un nombre illimité d'enfants et d'AESH et accordez-leur les heures dont ils ont besoin ou les heures de leurs contrats."
             color="green"
           />
 
           <Feature
             icon="edit"
-            title="Edition des plannings"
+            title="Édition des plannings"
             content="Assigner des Aesh ou Enfants à chaque créneau horaire et voyez l'évolution en temps réel des plannings inter-dépendants."
             color="blue"
           />
@@ -210,7 +209,7 @@ function Landing() {
           <Feature
             icon="dashboard"
             title="Suivi des temps"
-            content="Depuis le dashboard et à tout moment suivez le temps de chaque enfant et de chaque aesh afin que leurs plannings correspondent bien à leurs heures."
+            content="Depuis le tableau de bord, suivez à tout moment le temps de chaque enfant et de chaque AESH afin que leurs plannings correspondent bien à leurs heures."
             color="green"
           />
         </div>

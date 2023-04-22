@@ -18,6 +18,12 @@ function aeshPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
+  function convertToMinutes(hoursReels) {
+    const [hours, minutes] = hoursReels.split(":");
+    return parseInt(hours) * 60 + parseInt(minutes);
+  }
+
+
 
   const showModal = async () => {
     setIsModalOpen(true);
@@ -100,8 +106,8 @@ function aeshPage() {
           hoursReels: planningData ? planningData.hoursReels : '00:00',
         };
       });
-     
-      setAeshData(updatedAeshData);
+      const sortedChildrenData = updatedAeshData.sort((a, b) => convertToMinutes(subtractTime(a.hoursReels,a.hours)) - convertToMinutes(subtractTime(b.hoursReels,b.hours)))
+      setAeshData(sortedChildrenData);
       setIsLoading(false);
     }
   };

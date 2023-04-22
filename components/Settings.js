@@ -1,5 +1,6 @@
 import { Button, Col, Form, Input, InputNumber, Modal, Row, Space } from "antd";
 import { getAuth, updatePassword } from "firebase/auth";
+import { BeatLoader } from 'react-spinners';
 import {
   collection,
   doc,
@@ -26,6 +27,8 @@ function Settings() {
   const [schedules, setSchedules] = useState([]);
   const [levelsData, setLevelsData] = useState([]);
   const [message, setMessage] = useState('')
+  const [isLoading, setIsLoading] = useState(true);
+
 
   const handleLevelCount = (value) => {
     setLevelCount(value);
@@ -98,6 +101,7 @@ function Settings() {
   }, [levelsData]);
 
   const fetchSchoolData = async () => {
+
     const user = auth.currentUser;
     if (user) {
       setUserId(user.uid);
@@ -349,6 +353,12 @@ function formatData(data) {
   ];
 
   return (
+    <>
+    {isLoading ? (
+      <div className="flex justify-center items-center" style={{ minHeight: "10rem" }}>
+        <BeatLoader color="#B8336A" size={15} margin={2} />
+      </div>
+    ) : (
     <div className=" flex flex-col  items-center container mx-auto">
       <Form
         onFinish={handleSubmit}
@@ -589,7 +599,8 @@ function formatData(data) {
           </Form.Item>
         </Form>
       </Modal>
-    </div>
+    </div> )}
+    </>
   );
 }
 

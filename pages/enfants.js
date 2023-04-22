@@ -157,7 +157,6 @@ function childrenPage() {
         schoolRates={schoolRates}
         planning={data.planning}
         option="children"
-    
       />
     );
   });
@@ -192,7 +191,6 @@ function childrenPage() {
   footer={null}
   width={700}
   open={isModalOpen}
-
 >
 <AddChild onSave={handleOk}/>
 
