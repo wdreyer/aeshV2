@@ -5,8 +5,8 @@ import { useEffect, useState } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
 import Child from "../components/Lists/Child";
 import { auth, db } from "../firebaseConfig";
-import {subtractTime} from '../modules/time'
-import { calculHours } from "../modules/calculHours";
+import {subtractTime} from './modules/time'
+import { calculHours } from "./modules/calculHours";
 import AddChild from "../components/Lists/AddChild";
 import ChildDashboard from "./Lists/ChildDashboard";
 import AeshDashboard from "./Lists/AeshDashboard"
