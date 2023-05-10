@@ -1,6 +1,6 @@
 import { Button, Col, Form, Input, InputNumber, Modal, Row, Space } from "antd";
 import { getAuth, updatePassword } from "firebase/auth";
-import { BeatLoader } from 'react-spinners';
+import { BeatLoader } from "react-spinners";
 import {
   collection,
   doc,
@@ -8,7 +8,7 @@ import {
   getDocs,
   query,
   updateDoc,
-  where
+  where,
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { db } from "../firebaseConfig";
@@ -26,9 +26,8 @@ function Settings() {
   const [errorMessage, setErrorMessage] = useState("");
   const [schedules, setSchedules] = useState([]);
   const [levelsData, setLevelsData] = useState([]);
-  const [message, setMessage] = useState('')
+  const [message, setMessage] = useState("");
   const [isLoading, setIsLoading] = useState(true);
-
 
   const handleLevelCount = (value) => {
     setLevelCount(value);
@@ -44,22 +43,21 @@ function Settings() {
     });
   };
 
-  
   const handleClassCount = (levelIndex, value) => {
     setLevelsData((prevLevelsData) => {
       const newLevelsData = [...prevLevelsData];
       const existingTeachers = newLevelsData[levelIndex].teachers;
       const newTeachers = existingTeachers.slice(0, value);
-  
+
       while (newTeachers.length < value) {
         newTeachers.push("");
       }
-  
+
       newLevelsData[levelIndex] = {
         ...newLevelsData[levelIndex],
         teachers: newTeachers,
       };
-  
+
       updateLevels();
       return newLevelsData;
     });
@@ -94,21 +92,18 @@ function Settings() {
     fetchSchoolData();
   }, []);
 
- 
-
   useEffect(() => {
     updateLevels();
   }, [levelsData]);
 
   const fetchSchoolData = async () => {
-
     const user = auth.currentUser;
     if (user) {
       setUserId(user.uid);
       const schoolDoc = await getSchoolDoc(user.uid);
       if (schoolDoc) {
         const data = schoolDoc.data();
-        console.log("ladatadelecole",data)
+        console.log("ladatadelecole", data);
         setSchoolId(schoolDoc.id);
         setLevelsData(data.levelsData.map((level) => ({ ...level })));
         form.setFieldsValue({
@@ -118,7 +113,6 @@ function Settings() {
       }
     }
   };
-
 
   const getSchedules = async (schoolId) => {
     const schoolRef = doc(db, "schools", schoolId);
@@ -248,12 +242,8 @@ function Settings() {
     });
   };
   form.setFieldsValue({
-    "Levels": levelsData.length
+    Levels: levelsData.length,
   });
-
-
-
-
 
   const getSchoolDoc = async (userId) => {
     const q = query(collection(db, "schools"), where("userId", "==", userId));
@@ -261,72 +251,104 @@ function Settings() {
     return querySnapshot.docs[0];
   };
 
-const updateLevels = () => {
-  for (let levelIndex = 0; levelIndex < levelsData.length; levelIndex++) {
-    const level = levelsData[levelIndex];
-  
-    // Définir la valeur du champ pour le nom du niveau
-    form.setFieldsValue({
-      [`level${levelIndex}name`]: level.name
-    });
-  
-    // Parcourir les enseignants
-    for (let teacherIndex = 0; teacherIndex < level.teachers.length; teacherIndex++) {
-      const teacher = level.teachers[teacherIndex];
-  
-      // Définir la valeur du champ pour le nom de l'enseignant
+  const updateLevels = () => {
+    for (let levelIndex = 0; levelIndex < levelsData.length; levelIndex++) {
+      const level = levelsData[levelIndex];
+
+      // Définir la valeur du champ pour le nom du niveau
       form.setFieldsValue({
-        [`${levelIndex}${teacherIndex}`]: teacher
+        [`level${levelIndex}name`]: level.name,
+      });
+
+      // Parcourir les enseignants
+      for (
+        let teacherIndex = 0;
+        teacherIndex < level.teachers.length;
+        teacherIndex++
+      ) {
+        const teacher = level.teachers[teacherIndex];
+
+        // Définir la valeur du champ pour le nom de l'enseignant
+        form.setFieldsValue({
+          [`${levelIndex}${teacherIndex}`]: teacher,
+        });
+      }
+      form.setFieldsValue({
+        [`Nombre de classes ${level.name || `Niveau ${levelIndex + 1}`}`]:
+          level.teachers.length,
       });
     }
-      form.setFieldsValue({
-      [`Nombre de classes ${level.name || `Niveau ${levelIndex + 1}`}`]: level.teachers.length
+
+    form.setFieldsValue({
+      Levels: levelsData.length,
     });
-  }
-
-  form.setFieldsValue({
-    "Levels": levelsData.length
-  });
-
-}
-
-function formatData(data) {
-  const formattedData = {
-    userId: userId, // Ici, vous pouvez remplacer la valeur fixe par une fonction ou une variable qui génère un userId unique
-    schoolName: data.schoolName,
-    timeObj: {
-      "Après-midi 2.Start": `${String(data["Après-midi1.Start.hour"]).padStart(2, '0')}:${String(data["Après-midi1.Start.minute"]).padStart(2, '0')}`,
-      "Matin 2.Start": `${String(data["Matin1.Start.hour"]).padStart(2, '0')}:${String(data["Matin1.Start.minute"]).padStart(2, '0')}`,
-      "Après-midi 2.End": `${String(data["Après-midi1.End.hour"]).padStart(2, '0')}:${String(data["Après-midi1.End.minute"]).padStart(2, '0')}`,
-      "Après-midi 1.End": `${String(data["Après-midi0.End.hour"]).padStart(2, '0')}:${String(data["Après-midi0.End.minute"]).padStart(2, '0')}`,
-      "Après-midi 1.Start": `${String(data["Après-midi0.Start.hour"]).padStart(2, '0')}:${String(data["Après-midi0.Start.minute"]).padStart(2, '0')}`,
-      "Matin 1.Start": `${String(data["Matin0.Start.hour"]).padStart(2, '0')}:${String(data["Matin0.Start.minute"]).padStart(2, '0')}`,
-      "Matin 2.End": `${String(data["Matin1.End.hour"]).padStart(2, '0')}:${String(data["Matin1.End.minute"]).padStart(2, '0')}`,
-      "Matin 1.End": `${String(data["Matin0.End.hour"]).padStart(2, '0')}:${String(data["Matin0.End.minute"]).padStart(2, '0')}`,
-    },
-    
-    levelsData: [],
   };
 
-  for (let i = 0; i < data.Levels; i++) {
-    const levelName = data[`level${i}name`];
-    const teacherCount = data[`Nombre de classes ${levelName}`];
-    const teachers = [];
+  function formatData(data) {
+    const formattedData = {
+      userId: userId, // Ici, vous pouvez remplacer la valeur fixe par une fonction ou une variable qui génère un userId unique
+      schoolName: data.schoolName,
+      timeObj: {
+        "Après-midi 2.Start": `${String(
+          data["Après-midi1.Start.hour"]
+        ).padStart(2, "0")}:${String(data["Après-midi1.Start.minute"]).padStart(
+          2,
+          "0"
+        )}`,
+        "Matin 2.Start": `${String(data["Matin1.Start.hour"]).padStart(
+          2,
+          "0"
+        )}:${String(data["Matin1.Start.minute"]).padStart(2, "0")}`,
+        "Après-midi 2.End": `${String(data["Après-midi1.End.hour"]).padStart(
+          2,
+          "0"
+        )}:${String(data["Après-midi1.End.minute"]).padStart(2, "0")}`,
+        "Après-midi 1.End": `${String(data["Après-midi0.End.hour"]).padStart(
+          2,
+          "0"
+        )}:${String(data["Après-midi0.End.minute"]).padStart(2, "0")}`,
+        "Après-midi 1.Start": `${String(
+          data["Après-midi0.Start.hour"]
+        ).padStart(2, "0")}:${String(data["Après-midi0.Start.minute"]).padStart(
+          2,
+          "0"
+        )}`,
+        "Matin 1.Start": `${String(data["Matin0.Start.hour"]).padStart(
+          2,
+          "0"
+        )}:${String(data["Matin0.Start.minute"]).padStart(2, "0")}`,
+        "Matin 2.End": `${String(data["Matin1.End.hour"]).padStart(
+          2,
+          "0"
+        )}:${String(data["Matin1.End.minute"]).padStart(2, "0")}`,
+        "Matin 1.End": `${String(data["Matin0.End.hour"]).padStart(
+          2,
+          "0"
+        )}:${String(data["Matin0.End.minute"]).padStart(2, "0")}`,
+      },
 
-    for (let j = 0; j < teacherCount; j++) {
-      const teacherName = data[`${i}${j}`];
-      if (teacherName.trim() !== "") {
-        teachers.push(teacherName);
+      levelsData: [],
+    };
+
+    for (let i = 0; i < data.Levels; i++) {
+      const levelName = data[`level${i}name`];
+      const teacherCount = data[`Nombre de classes ${levelName}`];
+      const teachers = [];
+
+      for (let j = 0; j < teacherCount; j++) {
+        const teacherName = data[`${i}${j}`];
+        if (teacherName.trim() !== "") {
+          teachers.push(teacherName);
+        }
       }
-    }
 
-    formattedData.levelsData.push({
-      name: levelName,
-      teachers: teachers,
-    });
+      formattedData.levelsData.push({
+        name: levelName,
+        teachers: teachers,
+      });
+    }
+    return formattedData;
   }
-  return formattedData;
-}
 
   const handleSubmit = async (values) => {
     const schoolData = formatData(values);
@@ -335,9 +357,9 @@ function formatData(data) {
 
     try {
       await updateDoc(doc(db, "schools", schoolId), schoolData);
-      setMessage("La mise à jour a bien été effectuée")
+      setMessage("La mise à jour a bien été effectuée");
     } catch (error) {
-      setMessage("Erreur lors de la mise à jour des informations :")
+      setMessage("Erreur lors de la mise à jour des informations :");
       console.error(
         "Erreur lors de la mise à jour des informations :",
         error.message
@@ -354,252 +376,262 @@ function formatData(data) {
 
   return (
     <>
-    {isLoading ? (
-      <div className="flex justify-center items-center" style={{ minHeight: "10rem" }}>
-        <BeatLoader color="#B8336A" size={15} margin={2} />
-      </div>
-    ) : (
-    <div className=" flex flex-col  items-center container mx-auto">
-      <Form
-        onFinish={handleSubmit}
-        className=" border shadow-md px-2  flex flex-col  items-left bg-white rounded-lg"
-        form={form}
-      >
-        <div className="-md p-6 ">
-          <h2 className="text-xl font-bold mb-4">
-            Informations de l’utilisateur
-          </h2>
-          <Form.Item className="mb-0 w-80" label="Email" name="email">
-            <Input disabled />
-          </Form.Item>
-
-           {userId ==! "2lgNK2mgG2Z9aWldezuv823kVSl1" ? 
-          <div
-            className="mx-1 my-1 text-blue-400 text-left cursor-pointer underline hover:text-blue-600"
-            onClick={showModal}
+      {isLoading ? (
+        <div
+          className="flex justify-center items-center"
+          style={{ minHeight: "10rem" }}
+        >
+          <BeatLoader color="#B8336A" size={15} margin={2} />
+        </div>
+      ) : (
+        <div className=" flex flex-col  items-center container mx-auto">
+          <Form
+            onFinish={handleSubmit}
+            className=" border shadow-md px-2  flex flex-col  items-left bg-white rounded-lg"
+            form={form}
           >
-            Changer le mot de passe
-          </div> : ""
-        }
+            <div className="-md p-6 ">
+              <h2 className="text-xl font-bold mb-4">
+                Informations de l’utilisateur
+              </h2>
+              <Form.Item className="mb-0 w-80" label="Email" name="email">
+                <Input disabled />
+              </Form.Item>
 
-          <Form.Item
-            label="Nom de l'école"
-            name="schoolName"
-            className="mt-2 w-80"
-            rules={[
-              {
-                required: true,
-                message: "Veuillez saisir le nom de lécole.",
-              },
-            ]}
-          >
-            <Input />
-          </Form.Item>
-          <h2 className="text-xl font-bold mb-4">Informations de l’école</h2>
-          <Row gutter={16}>
-            {labelsMap.map(({ label, field }, index) => (
-              <Col
-                key={index}
-                xs={24}
-                sm={18}
-                md={18}
-                lg={6}
-                className="flex flex-col"
+              {userId == !"2lgNK2mgG2Z9aWldezuv823kVSl1" ? (
+                <div
+                  className="mx-1 my-1 text-blue-400 text-left cursor-pointer underline hover:text-blue-600"
+                  onClick={showModal}
+                >
+                  Changer le mot de passe
+                </div>
+              ) : (
+                ""
+              )}
+
+              <Form.Item
+                label="Nom de l'école"
+                name="schoolName"
+                className="mt-2 w-80"
+                rules={[
+                  {
+                    required: true,
+                    message: "Veuillez saisir le nom de lécole.",
+                  },
+                ]}
               >
-                <span className="text-sm font-bold mb-2">{`${label} - début`}</span>
-                <Space>
-                  <Form.Item name={`${field}.Start.hour`}>
-                    <InputNumber
-                      min={7}
-                      max={23}
-                      placeholder="Heures"
-                      className="w-15"
-                    />
-                  </Form.Item>
-                  <Form.Item name={`${field}.Start.minute`}>
-                    <InputNumber
-                      min={0}
-                      max={59}
-                      step={5}
-                      placeholder="Minutes"
-                      className="w-15"
-                    />
-                  </Form.Item>
-                </Space>
-                <span className="text-sm font-bold mt-4 mb-2">{`${label} - fin`}</span>
-                <Space>
-                  <Form.Item name={`${field}.End.hour`}>
-                    <InputNumber
-                      min={7}
-                      max={23}
-                      placeholder="Heures"
-                      className="w-15"
-                    />
-                  </Form.Item>
-                  <Form.Item name={`${field}.End.minute`}>
-                    <InputNumber
-                      min={0}
-                      max={59}
-                      step={5}
-                      placeholder="Minutes"
-                      className="w-15"
-                    />
-                  </Form.Item>
-                </Space>
-              </Col>
-            ))}
-          </Row>
-          <h2 className="text-xl font-bold mb-4">Classes :</h2>
-          <div>
-            {levelsData.map((level, levelIndex) => {
-              const { name: levelName, teachers } = level;
-              if (!teachers) {
-                return null;
-              }
-              return (
-                <>
-                  {levelIndex === 0 && (
-                    <Form.Item name="Levels" label="Nombre de niveaux">
-                      <InputNumber
-                        min={0}
-                        max={10}
-                        onChange={(value) => handleLevelCount(value)}
-                        
-                      />
-                    </Form.Item>
-                  )}
-                  <div
-                    key={levelIndex}
-                    className="mb-4 p-4 border border-gray-300 rounded-lg shadow-md"
+                <Input />
+              </Form.Item>
+              <h2 className="text-xl font-bold mb-4">
+                Informations de l’école
+              </h2>
+              <Row gutter={16}>
+                {labelsMap.map(({ label, field }, index) => (
+                  <Col
+                    key={index}
+                    xs={24}
+                    sm={18}
+                    md={18}
+                    lg={6}
+                    className="flex flex-col"
                   >
-                    <Form.Item
-                      label={`Nom du niveau ${levelIndex + 1}`}
-                      name={`level${levelIndex}name`}
-                    >
-                      <Input
-                        className="w-full"
-                        onChange={(e) =>
-                          handleLevelName(levelIndex, e.target.value)
-                        }
-                      />
-                    </Form.Item>
-                    <Form.Item
-                    name={`Nombre de classes ${level.name || `Niveau ${levelIndex + 1}`}`}
-                    
-                      label={`Nombre de classes ${
-                        levelName || `Niveau ${levelIndex + 1}`
-                      }`}
-                    >
-                      <InputNumber
-                        min={0}
-                        max={10}
-                        onChange={(value) =>
-                          handleClassCount(levelIndex, value)
-                        }
-                      />
-                    </Form.Item>
-                    <div className="bg-gray-100 p-4 rounded-lg">
-                      {teachers.map((teacher, teacherIndex) => (
+                    <span className="text-sm font-bold mb-2">{`${label} - début`}</span>
+                    <Space>
+                      <Form.Item name={`${field}.Start.hour`}>
+                        <InputNumber
+                          min={7}
+                          max={23}
+                          placeholder="Heures"
+                          className="w-15"
+                        />
+                      </Form.Item>
+                      <Form.Item name={`${field}.Start.minute`}>
+                        <InputNumber
+                          min={0}
+                          max={59}
+                          step={5}
+                          placeholder="Minutes"
+                          className="w-15"
+                        />
+                      </Form.Item>
+                    </Space>
+                    <span className="text-sm font-bold mt-4 mb-2">{`${label} - fin`}</span>
+                    <Space>
+                      <Form.Item name={`${field}.End.hour`}>
+                        <InputNumber
+                          min={7}
+                          max={23}
+                          placeholder="Heures"
+                          className="w-15"
+                        />
+                      </Form.Item>
+                      <Form.Item name={`${field}.End.minute`}>
+                        <InputNumber
+                          min={0}
+                          max={59}
+                          step={5}
+                          placeholder="Minutes"
+                          className="w-15"
+                        />
+                      </Form.Item>
+                    </Space>
+                  </Col>
+                ))}
+              </Row>
+              <h2 className="text-xl font-bold mb-4">Classes :</h2>
+              <div>
+                {levelsData.map((level, levelIndex) => {
+                  const { name: levelName, teachers } = level;
+                  if (!teachers) {
+                    return null;
+                  }
+                  return (
+                    <>
+                      {levelIndex === 0 && (
+                        <Form.Item name="Levels" label="Nombre de niveaux">
+                          <InputNumber
+                            min={0}
+                            max={10}
+                            onChange={(value) => handleLevelCount(value)}
+                          />
+                        </Form.Item>
+                      )}
+                      <div
+                        key={levelIndex}
+                        className="mb-4 p-4 border border-gray-300 rounded-lg shadow-md"
+                      >
                         <Form.Item
-                          key={teacherIndex}
-                          name={`${levelIndex}${teacherIndex}`}
-                          label={`${levelName || `Niveau ${levelIndex + 1}`} ${
-                            teacherIndex + 1
-                          }`}
+                          label={`Nom du niveau ${levelIndex + 1}`}
+                          name={`level${levelIndex}name`}
                         >
                           <Input
-                            placeholder="Prénom du/de la Professeur.e"
+                            className="w-full"
                             onChange={(e) =>
-                              handleTeacherName(
-                                levelIndex,
-                                teacherIndex,
-                                e.target.value
-                              )
+                              handleLevelName(levelIndex, e.target.value)
                             }
                           />
                         </Form.Item>
-                      ))}
-                    </div>
-                  </div>
-                </>
-              );
-            })}
-          </div>
-          <span className="text-green-800 ">{message}</span>
-          <div className="mt-2 w-full justify-between">         
-            <Space>
-              <Button htmlType="submit">Sauvegarder les modifications</Button>
-            </Space>
-          </div>
+                        <Form.Item
+                          name={`Nombre de classes ${
+                            level.name || `Niveau ${levelIndex + 1}`
+                          }`}
+                          label={`Nombre de classes ${
+                            levelName || `Niveau ${levelIndex + 1}`
+                          }`}
+                        >
+                          <InputNumber
+                            min={0}
+                            max={10}
+                            onChange={(value) =>
+                              handleClassCount(levelIndex, value)
+                            }
+                          />
+                        </Form.Item>
+                        <div className="bg-gray-100 p-4 rounded-lg">
+                          {teachers.map((teacher, teacherIndex) => (
+                            <Form.Item
+                              key={teacherIndex}
+                              name={`${levelIndex}${teacherIndex}`}
+                              label={`${
+                                levelName || `Niveau ${levelIndex + 1}`
+                              } ${teacherIndex + 1}`}
+                            >
+                              <Input
+                                placeholder="Prénom du/de la Professeur.e"
+                                onChange={(e) =>
+                                  handleTeacherName(
+                                    levelIndex,
+                                    teacherIndex,
+                                    e.target.value
+                                  )
+                                }
+                              />
+                            </Form.Item>
+                          ))}
+                        </div>
+                      </div>
+                    </>
+                  );
+                })}
+              </div>
+              <span className="text-green-800 ">{message}</span>
+              <div className="mt-2 w-full justify-between">
+                <Space>
+                  <Button htmlType="submit">
+                    Sauvegarder les modifications
+                  </Button>
+                </Space>
+              </div>
+            </div>
+          </Form>
+          <Modal
+            title="Changer de mot de passe"
+            onOk={handleChangePassword}
+            onCancel={handleCancel}
+            width={900}
+            footer={[
+              <Button key="cancel" onClick={handleCancel}>
+                Annuler
+              </Button>,
+              <Button key="submit" onClick={handleChangePassword}>
+                Changer le mot de passe
+              </Button>,
+            ]}
+            open={isModalOpen}
+          >
+            <Form layout="vertical">
+              {errorMessage && (
+                <div className="text-red-500 mb-4">{errorMessage}</div>
+              )}
+              <Form.Item
+                label="Ancien mot de passe"
+                name="oldPassword"
+                rules={[
+                  {
+                    required: true,
+                    message: "Veuillez saisir votre ancien mot de passe.",
+                  },
+                ]}
+              >
+                <Input.Password
+                  value={oldPassword}
+                  onChange={(e) => setOldPassword(e.target.value)}
+                />
+              </Form.Item>
+              <Form.Item
+                label="Nouveau mot de passe"
+                name="newPassword"
+                rules={[
+                  {
+                    required: true,
+                    message: "Veuillez saisir un nouveau mot de passe.",
+                  },
+                ]}
+              >
+                <Input.Password
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                />
+              </Form.Item>
+              <Form.Item
+                label="Confirmez le nouveau mot de passe"
+                name="confirmNewPassword"
+                rules={[
+                  {
+                    required: true,
+                    message: "Veuillez confirmer le nouveau mot de passe.",
+                  },
+                ]}
+              >
+                <Input.Password
+                  value={confirmNewPassword}
+                  onChange={(e) => setConfirmNewPassword(e.target.value)}
+                />
+              </Form.Item>
+            </Form>
+          </Modal>
         </div>
-      </Form>
-      <Modal
-        title="Changer de mot de passe"
-        onOk={handleChangePassword}
-        onCancel={handleCancel}
-        width={900}
-        footer={[
-          <Button key="cancel" onClick={handleCancel}>
-            Annuler
-          </Button>,
-          <Button key="submit" onClick={handleChangePassword}>
-            Changer le mot de passe
-          </Button>,
-        ]}
-        open={isModalOpen}
-      >
-        <Form layout="vertical">
-          {errorMessage && (
-            <div className="text-red-500 mb-4">{errorMessage}</div>
-          )}
-          <Form.Item
-            label="Ancien mot de passe"
-            name="oldPassword"
-            rules={[
-              {
-                required: true,
-                message: "Veuillez saisir votre ancien mot de passe.",
-              },
-            ]}
-          >
-            <Input.Password
-              value={oldPassword}
-              onChange={(e) => setOldPassword(e.target.value)}
-            />
-          </Form.Item>
-          <Form.Item
-            label="Nouveau mot de passe"
-            name="newPassword"
-            rules={[
-              {
-                required: true,
-                message: "Veuillez saisir un nouveau mot de passe.",
-              },
-            ]}
-          >
-            <Input.Password
-              value={newPassword}
-              onChange={(e) => setNewPassword(e.target.value)}
-            />
-          </Form.Item>
-          <Form.Item
-            label="Confirmez le nouveau mot de passe"
-            name="confirmNewPassword"
-            rules={[
-              {
-                required: true,
-                message: "Veuillez confirmer le nouveau mot de passe.",
-              },
-            ]}
-          >
-            <Input.Password
-              value={confirmNewPassword}
-              onChange={(e) => setConfirmNewPassword(e.target.value)}
-            />
-          </Form.Item>
-        </Form>
-      </Modal>
-    </div> )}
+      )}
     </>
   );
 }
