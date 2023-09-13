@@ -111,6 +111,7 @@ function Settings() {
           email: user.email,
         });
       }
+      setIsLoading(false);     
     }
   };
 
