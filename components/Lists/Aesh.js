@@ -17,7 +17,7 @@ function Aesh({planning,onSave, idAesh, firstName, level, teacher, hours,schoolI
 
   const showDeleteConfirm = () => {
     confirm({
-      title: 'Voulez vous vraiment supprimer cet enfant ?',
+      title: 'Voulez vous vraiment supprimer cet Aesh ?',
       icon: <ExclamationCircleOutlined />,
       okText: 'Oui',
       okType: 'danger',
