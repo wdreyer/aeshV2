@@ -4,6 +4,7 @@ import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
 import Aesh from "../components/Lists/Aesh";
+import AeshClassPlanning from "../components/Plannings/AeshClassPlanning";
 import { auth, db } from "../firebaseConfig";
 import {subtractTime} from '../modules/time'
 import { calculHours } from "../modules/calculHours";
@@ -17,6 +18,7 @@ function aeshPage() {
   const [schoolRates, setSchoolRates] = useState({})
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [displayList, setDisplayList] = useState(true);
 
   function convertToMinutes(hoursReels) {
     const [hours, minutes] = hoursReels.split(":");
@@ -134,8 +136,8 @@ function aeshPage() {
       return durations.filter(duration => duration !== undefined);
   };
 
-  const aesh = aeshData.map((data, i) => {
-    return (
+  const aesh = aeshData.map((data, i) => (
+    displayList ? (
       <Aesh
         key={data.id}
         idAesh={data.id}
@@ -149,15 +151,38 @@ function aeshPage() {
         schoolRates={schoolRates}
         planning={data.planning}
         option="aesh"
-    
       />
-    );
-  });
+    ) : (
+      <AeshClassPlanning
+        key={data.id}
+        idAesh={data.id}
+        firstName={data.firstName}
+        level={data.level}
+        teacher={data.teacher}
+        hoursReels={data.hoursReels}
+        hours={data.hours}
+        schoolId={schoolId}
+        onSave={fetchAesh}
+        schoolRates={schoolRates}
+        planning={data.planning}
+        option="aesh"
+        // Ajoutez les props spécifiques à AeshClassPlanning ici
+      />
+    )
+  ));
+  
 
   return (
     <>
-    <div className=" border rounded mb-2 text-lg font-semibold">
-    <Row className=" p-2 shadow-md  text-lg font-bold">
+      <buttons
+      className=" cursor-pointer text-black font-bold py-1 px-4 rounded"
+      onClick={() => setDisplayList(!displayList)}
+    >
+      Basculer la Vue
+    </buttons>
+    <div className={`${displayList ? '' : 'flex flex-wrap '} border rounded mb-2 text-lg font-semibold`}>
+  
+    <Row className={`p-2 shadow-md text-lg font-bold ${displayList ? '' : 'hidden'}`}>
       <Col span={4}><div className="flex items-center border-r pl-2">Prénom</div></Col>
       <Col span={5}><div className="flex items-center border-r pl-2">Heures accordés</div></Col>
       <Col span={5}><div className="flex items-center border-r pl-2">Heures Réelles</div></Col>
@@ -165,7 +190,7 @@ function aeshPage() {
       <Col span={5}  className=" pl-2">Planning et Options</Col>
     </Row>
     {isLoading ? (
-      <div className="flex justify-center items-center "
+      <div className="flex  justify-center items-center "
       style={{ minHeight: "30rem" }}>
         <BeatLoader color="#B8336A" size={15} margin={2} />
       </div>
