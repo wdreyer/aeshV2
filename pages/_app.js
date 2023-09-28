@@ -32,6 +32,7 @@ function App({ Component, pageProps }) {
     <>
     <Head>
       <title>Aesh Manager</title>
+
     </Head>
     {user && !isSignUpPage ? (
       <Layout>

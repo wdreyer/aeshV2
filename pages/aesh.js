@@ -10,6 +10,9 @@ import {subtractTime} from '../modules/time'
 import { calculHours } from "../modules/calculHours";
 import AddAesh from "../components/Lists/AddAesh";
 import { BeatLoader } from 'react-spinners';
+import exportToPDF from '../modules/exportToPdf';
+
+
 
 function aeshPage() {
   const [user, loading, error] = useAuthState(auth);
@@ -170,17 +173,30 @@ function aeshPage() {
       />
     )
   ));
-  
+  const handleExportToPDF = () => {
+    exportToPDF();
+  };
 
   return (
     <>
+    <div className="flex justify-between">
       <buttons
       className=" cursor-pointer text-black font-bold py-1 px-4 rounded"
       onClick={() => setDisplayList(!displayList)}
     >
       Basculer la Vue
     </buttons>
-    <div className={`${displayList ? '' : 'flex flex-wrap '} border rounded mb-2 text-lg font-semibold`}>
+    {!displayList && (
+      <button
+        className="cursor-pointer text-black font-bold py-1 px-4 rounded mt-2"
+        onClick={handleExportToPDF}
+      >
+        Export to PDF
+      </button>
+    )}
+    
+    </div>
+    <div id="div-a-imprimer" className={`${displayList ? '' : 'flex flex-wrap '} border rounded mb-2 text-lg font-semibold`}>
   
     <Row className={`p-2 shadow-md text-lg font-bold ${displayList ? '' : 'hidden'}`}>
       <Col span={4}><div className="flex items-center border-r pl-2">Prénom</div></Col>

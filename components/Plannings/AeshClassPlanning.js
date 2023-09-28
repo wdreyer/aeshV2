@@ -240,7 +240,7 @@ function AeshClassPlanning({
 
   return (
     <>
-    <div  className="w-[400px] m-2  backdrop-blur-md rounded-lg shadow-lg">
+    <div  className="w-[380px] m-1 mb-3 backdrop-blur-md rounded-lg shadow-lg">
     <div className="flex justify-between" >  
 
     <span className="mt-1 ml-1">{aeshData.firstName}</span>
@@ -277,7 +277,7 @@ function AeshClassPlanning({
           </Row>
           {timeSlots.map((timeSlot) => (
             <Row key={timeSlot}>
-              <Col className="border p-1" span={4}>
+              <Col className="border py-1" span={4}>
                 {timeSlot}
               </Col>
               {weekDays.map((day) => (
