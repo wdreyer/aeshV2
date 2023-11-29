@@ -175,8 +175,8 @@ function AeshClassPlanning({
   const onFinish = async () => {
     try {
       const formValues = await form.validateFields();
-      const nameAesh = formValues.firstName;
-      console.log(formValues)
+      const nameAesh = aeshData.firstName;
+      console.log("name de laeshici ?", formValues)
       // Process form values
       await updateDatabase(planningActual, nameAesh);
       await updateAesh(idAesh, {
@@ -220,7 +220,7 @@ function AeshClassPlanning({
     return querySnapshot.docs[0];
   };
 
-  const timeSlots = ["Matin 1", "Matin 2", "A-midi 1", "A-midi 2"];
+  const timeSlots = ["Matin 1", "Matin 2","Après-midi 1", "Après-midi 2"];
   const weekDays = ["Lundi", "Mardi", "Jeudi", "Vendredi"];
 
   useEffect(() => {
@@ -237,10 +237,9 @@ function AeshClassPlanning({
   }, [planningActual]);
 
 
-
   return (
     <>
-    <div  className="w-[380px] m-1 mb-3 backdrop-blur-md rounded-lg shadow-lg">
+    <div  className="w-[380px] m-1 mb-8 backdrop-blur-md rounded-lg shadow-lg">
     <div className="flex justify-between" >  
 
     <span className="mt-1 ml-1">{aeshData.firstName}</span>
